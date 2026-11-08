@@ -2,14 +2,13 @@
     "compilerOptions": {
       "target": "ES2021",
       "module": "esnext",
-      "moduleResolution": "node",
+      "moduleResolution": "bundler",
       "strict": true,
       "jsx": "preserve",
       "sourceMap": true,
       "preserveConstEnums": true,
       "noImplicitAny": true,
       "noImplicitOverride": true,
-      "experimentalDecorators": true,
       "noEmit": true,
       "resolveJsonModule": true,
       "esModuleInterop": true,
@@ -18,10 +17,7 @@
         "dom",
         "esnext",
       ],
-      "baseUrl": ".",
-      "types": [
-        "node",
-      ],
+      "types": [],
     },
     "include": [
       "src/**/*.ts",

@@ -3,7 +3,7 @@
   "version": "2.0.0-beta2.0",
   "license": "MIT",
   "type": "module",
-  "packageManager": "bun@1.4.2",
+  "packageManager": "bun@1.4.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/tsitdev/saman-lib.git"
@@ -33,9 +33,7 @@
     "prepublishOnly": "bun run build"
   },
   "devDependencies": {
-    "@types/node": "25.9.3",
     "tsdown": "^0.23.7",
-    "typescript": "^5.8.3",
-    "utility-types": "^3.11.0"
+    "typescript": "^7.0.2"
   }
 }
