@@ -1,5 +1,10 @@
 ﻿import { SamanDeskCore } from '../../core'
-import { SamanDeskConfig, SamanDeskError, SamanDeskErrorCode, OutgoingMessage } from '../../core/types'
+import {
+  SamanDeskConfig,
+  SamanDeskError,
+  SamanDeskErrorCode,
+  OutgoingMessage,
+} from '../../core/types'
 
 interface ReactNativeState {
   source: { uri: string }
@@ -12,15 +17,26 @@ interface ReactNativeOptions {
 }
 
 export function createSamanDeskReactNative(config: SamanDeskConfig, options: ReactNativeOptions) {
-  if (typeof options?.onStateChange !== 'function' || typeof options?.injectJavaScript !== 'function') {
-    throw new SamanDeskError('INVALID_CONFIG', 'React Native requires onStateChange and injectJavaScript callbacks.')
+  if (
+    typeof options?.onStateChange !== 'function' ||
+    typeof options?.injectJavaScript !== 'function'
+  ) {
+    throw new SamanDeskError(
+      'INVALID_CONFIG',
+      'React Native requires onStateChange and injectJavaScript callbacks.',
+    )
   }
   class NativeCore extends SamanDeskCore {
     protected override sendMessage(message: OutgoingMessage) {
       try {
-        options.injectJavaScript(`window.dispatchEvent(new MessageEvent('message', { data: ${JSON.stringify(message)} })); true;`)
+        options.injectJavaScript(
+          `window.dispatchEvent(new MessageEvent('message', { data: ${JSON.stringify(message)} })); true;`,
+        )
       } catch {
-        this.fail('LOAD_FAILED', 'injectJavaScript failed. Check that the WebView is mounted and its reference is connected.')
+        this.fail(
+          'LOAD_FAILED',
+          'injectJavaScript failed. Check that the WebView is mounted and its reference is connected.',
+        )
       }
     }
 
@@ -50,12 +66,18 @@ export function createSamanDeskReactNative(config: SamanDeskConfig, options: Rea
     try {
       options.onStateChange(currentState)
     } catch {
-      core.reportError(new SamanDeskError('CALLBACK_ERROR', 'onStateChange threw an exception in the host application.'))
+      core.reportError(
+        new SamanDeskError(
+          'CALLBACK_ERROR',
+          'onStateChange threw an exception in the host application.',
+        ),
+      )
     }
   }
 
   const assertAlive = () => {
-    if (core.isDestroyed) throw new SamanDeskError('DESTROYED', 'This instance was destroyed. Create a new instance.')
+    if (core.isDestroyed)
+      throw new SamanDeskError('DESTROYED', 'This instance was destroyed. Create a new instance.')
   }
 
   const finishOpen = () => {
@@ -77,7 +99,12 @@ export function createSamanDeskReactNative(config: SamanDeskConfig, options: Rea
       assertAlive()
       if (link !== undefined) core.getOpenUrl(link)
       if (core.hasFailed) {
-        core.reportError(new SamanDeskError('LOAD_FAILED', 'Initialization failed. Call retry() or create an instance with a fresh verifiedToken.'))
+        core.reportError(
+          new SamanDeskError(
+            'LOAD_FAILED',
+            'Initialization failed. Call retry() or create an instance with a fresh verifiedToken.',
+          ),
+        )
         return
       }
       pendingOpen = true
@@ -117,22 +144,32 @@ export function createSamanDeskReactNative(config: SamanDeskConfig, options: Rea
       return {
         // Remount on retry so replies from an earlier authentication cannot win.
         key: `samandesk-${attempt}`,
-        onMessage: (event: { nativeEvent: { data: string, url?: string } }) => {
+        onMessage: (event: { nativeEvent: { data: string; url?: string } }) => {
           if (attempt !== generation || core.isDestroyed) return
           const url = event.nativeEvent.url
           if (url) {
-            try { if (new URL(url).origin !== core.origin) return } catch { return }
+            try {
+              if (new URL(url).origin !== core.origin) return
+            } catch {
+              return
+            }
           }
           core.handleIncomingMessage(event.nativeEvent.data)
           finishOpen()
         },
         onError: () => {
           if (attempt !== generation) return
-          core.fail('LOAD_FAILED', 'The WebView could not load the web app. Check network access and WebView configuration.')
+          core.fail(
+            'LOAD_FAILED',
+            'The WebView could not load the web app. Check network access and WebView configuration.',
+          )
         },
-        onHttpError: (event: { nativeEvent: { statusCode: number, url: string } }) => {
+        onHttpError: (event: { nativeEvent: { statusCode: number; url: string } }) => {
           if (attempt !== generation || event.nativeEvent.url !== currentState.source.uri) return
-          core.fail('LOAD_FAILED', `The WebView document returned HTTP ${event.nativeEvent.statusCode}.`)
+          core.fail(
+            'LOAD_FAILED',
+            `The WebView document returned HTTP ${event.nativeEvent.statusCode}.`,
+          )
         },
       }
     },
@@ -141,4 +178,3 @@ export function createSamanDeskReactNative(config: SamanDeskConfig, options: Rea
   core.startHandshake()
   return rnApi
 }
-

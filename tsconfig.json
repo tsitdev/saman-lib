@@ -1,26 +1,20 @@
 {
-    "compilerOptions": {
-      "target": "ES2021",
-      "module": "esnext",
-      "moduleResolution": "bundler",
-      "strict": true,
-      "jsx": "preserve",
-      "sourceMap": true,
-      "preserveConstEnums": true,
-      "noImplicitAny": true,
-      "noImplicitOverride": true,
-      "noEmit": true,
-      "resolveJsonModule": true,
-      "esModuleInterop": true,
-      "skipLibCheck": true,
-      "lib": [
-        "dom",
-        "esnext",
-      ],
-      "types": [],
-    },
-    "include": [
-      "src/**/*.ts",
-      "src/**/*.d.ts",
-    ],
-  }
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "jsx": "preserve",
+    "sourceMap": true,
+    "preserveConstEnums": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "lib": ["dom", "esnext"],
+    "types": []
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts"]
+}

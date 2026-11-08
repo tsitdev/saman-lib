@@ -1,5 +1,10 @@
 ﻿import { SamanDeskCore } from '../../core'
-import { SamanDeskConfig, SamanDeskError, OutgoingMessage, SamanDeskErrorCode } from '../../core/types'
+import {
+  SamanDeskConfig,
+  SamanDeskError,
+  OutgoingMessage,
+  SamanDeskErrorCode,
+} from '../../core/types'
 
 interface WebOptions {
   /** auto uses a popup when the legacy web app's top-window bridge is inaccessible. */
@@ -33,7 +38,10 @@ export function createSamanDeskWeb(config: SamanDeskConfig, options: WebOptions 
 
   const core = new WebCore(config)
   if (typeof document === 'undefined' || !document.body) {
-    throw new SamanDeskError('INVALID_CONFIG', 'Create the web adapter on the client after document.body exists (for example in onMounted/useEffect).')
+    throw new SamanDeskError(
+      'INVALID_CONFIG',
+      'Create the web adapter on the client after document.body exists (for example in onMounted/useEffect).',
+    )
   }
   if (options.mode !== undefined && !['auto', 'iframe', 'popup'].includes(options.mode)) {
     throw new SamanDeskError('INVALID_CONFIG', 'Web mode must be auto, iframe or popup.')
@@ -52,33 +60,60 @@ export function createSamanDeskWeb(config: SamanDeskConfig, options: WebOptions 
   const applyStyles = () => {
     const frameVisible = visible && !usingPopup
     Object.assign(backdrop.style, {
-      position: 'fixed', inset: '0', backgroundColor: 'rgba(0,0,0,0.5)',
-      zIndex: '1000', display: frameVisible && !options.fullScreen ? 'block' : 'none',
+      position: 'fixed',
+      inset: '0',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      zIndex: '1000',
+      display: frameVisible && !options.fullScreen ? 'block' : 'none',
     })
     Object.assign(frame.style, {
-      position: 'fixed', zIndex: '1000', border: 'none',
-      display: 'block', opacity: frameVisible ? '1' : '0',
+      position: 'fixed',
+      zIndex: '1000',
+      border: 'none',
+      display: 'block',
+      opacity: frameVisible ? '1' : '0',
       pointerEvents: frameVisible ? 'auto' : 'none',
     })
     frame.title = 'SamanDesk support'
     frame.tabIndex = frameVisible ? 0 : -1
     frame.setAttribute('aria-hidden', String(!frameVisible))
     if (!frameVisible) {
-      Object.assign(frame.style, { width: '1px', height: '1px', left: '-10000px', top: '0', boxShadow: 'none' })
+      Object.assign(frame.style, {
+        width: '1px',
+        height: '1px',
+        left: '-10000px',
+        top: '0',
+        boxShadow: 'none',
+      })
     } else if (options.fullScreen) {
       const marginTop = options.style?.marginTop ?? 0
       const marginBottom = options.style?.marginBottom ?? 0
       Object.assign(frame.style, {
-        bottom: `${marginBottom}px`, left: '0', top: `${marginTop}px`, right: '0',
-        width: '100%', height: `calc(100% - ${marginTop + marginBottom}px)`,
-        maxWidth: 'none', maxHeight: 'none', boxShadow: 'none', borderRadius: '0', transform: 'none',
+        bottom: `${marginBottom}px`,
+        left: '0',
+        top: `${marginTop}px`,
+        right: '0',
+        width: '100%',
+        height: `calc(100% - ${marginTop + marginBottom}px)`,
+        maxWidth: 'none',
+        maxHeight: 'none',
+        boxShadow: 'none',
+        borderRadius: '0',
+        transform: 'none',
       })
     } else {
       Object.assign(frame.style, {
-        top: '50%', left: '50%', bottom: 'auto', right: 'auto', transform: 'translate(-50%, -50%)',
-        width: options.style?.width || '100%', maxWidth: '500px',
-        height: options.style?.height || '100%', maxHeight: '660px',
-        boxShadow: '0px 0px 100px 0px rgba(0,0,0,0.48)', borderRadius: '24px',
+        top: '50%',
+        left: '50%',
+        bottom: 'auto',
+        right: 'auto',
+        transform: 'translate(-50%, -50%)',
+        width: options.style?.width || '100%',
+        maxWidth: '500px',
+        height: options.style?.height || '100%',
+        maxHeight: '660px',
+        boxShadow: '0px 0px 100px 0px rgba(0,0,0,0.48)',
+        borderRadius: '24px',
       })
     }
   }
@@ -88,7 +123,11 @@ export function createSamanDeskWeb(config: SamanDeskConfig, options: WebOptions 
     visible = true
     applyStyles()
     if (usingPopup) {
-      try { popup?.focus() } catch { /* Focus can be restricted by the browser. */ }
+      try {
+        popup?.focus()
+      } catch {
+        /* Focus can be restricted by the browser. */
+      }
     }
     if (!wasVisible) core.notify('onOpen')
   }
@@ -118,7 +157,10 @@ export function createSamanDeskWeb(config: SamanDeskConfig, options: WebOptions 
         if (!popup || popup.closed) throw new Error()
         popup.location.href = url
       } catch {
-        core.fail('LOAD_FAILED', 'The popup connection was lost. Check popup/sandbox and Cross-Origin-Opener-Policy settings.')
+        core.fail(
+          'LOAD_FAILED',
+          'The popup connection was lost. Check popup/sandbox and Cross-Origin-Opener-Policy settings.',
+        )
       }
     } else {
       frame.src = url
@@ -142,7 +184,8 @@ export function createSamanDeskWeb(config: SamanDeskConfig, options: WebOptions 
   }
 
   const assertAlive = () => {
-    if (core.isDestroyed) throw new SamanDeskError('DESTROYED', 'This instance was destroyed. Create a new instance.')
+    if (core.isDestroyed)
+      throw new SamanDeskError('DESTROYED', 'This instance was destroyed. Create a new instance.')
   }
 
   // Deployed web apps send to window.top; newer ones may send to window.parent.
@@ -173,7 +216,10 @@ export function createSamanDeskWeb(config: SamanDeskConfig, options: WebOptions 
     const initialFrame = frame
     frame.onerror = () => {
       if (frame !== initialFrame || usingPopup) return
-      core.fail('LOAD_FAILED', 'The embedded web app could not load. Check network access and embedding policy, or call openPopup() from a user click.')
+      core.fail(
+        'LOAD_FAILED',
+        'The embedded web app could not load. Check network access and embedding policy, or call openPopup() from a user click.',
+      )
     }
     navigate(core.getInitialUrl())
     if (!core.config.verifiedToken) show()
@@ -196,9 +242,16 @@ export function createSamanDeskWeb(config: SamanDeskConfig, options: WebOptions 
     let opened: Window | null = null
     try {
       opened = window.open('about:blank', '_blank', 'popup,width=500,height=660')
-    } catch { /* Sandboxed frames may deny window.open entirely. */ }
+    } catch {
+      /* Sandboxed frames may deny window.open entirely. */
+    }
     if (!opened) {
-      core.reportError(new SamanDeskError('POPUP_BLOCKED', 'The browser blocked the support popup. Call openPopup() directly from a click and allow popups for this page.'))
+      core.reportError(
+        new SamanDeskError(
+          'POPUP_BLOCKED',
+          'The browser blocked the support popup. Call openPopup() directly from a click and allow popups for this page.',
+        ),
+      )
       return
     }
     const reusePopupSession = usingPopup && core.isReady && !restart
@@ -234,11 +287,21 @@ export function createSamanDeskWeb(config: SamanDeskConfig, options: WebOptions 
         return
       }
       if (!canReceiveLegacyMessages) {
-        core.reportError(new SamanDeskError('POPUP_REQUIRED', 'The deployed web app sends to an inaccessible top window. Call openPopup() from a user click.'))
+        core.reportError(
+          new SamanDeskError(
+            'POPUP_REQUIRED',
+            'The deployed web app sends to an inaccessible top window. Call openPopup() from a user click.',
+          ),
+        )
         return
       }
       if (core.hasFailed) {
-        core.reportError(new SamanDeskError('LOAD_FAILED', 'Initialization failed. Use openPopup() from a user click for blocked iframe/storage, or retry() with a reusable token. A consumed token requires a new instance with a fresh verifiedToken.'))
+        core.reportError(
+          new SamanDeskError(
+            'LOAD_FAILED',
+            'Initialization failed. Use openPopup() from a user click for blocked iframe/storage, or retry() with a reusable token. A consumed token requires a new instance with a fresh verifiedToken.',
+          ),
+        )
         return
       }
       pendingOpen = true
@@ -288,9 +351,14 @@ export function createSamanDeskWeb(config: SamanDeskConfig, options: WebOptions 
   document.body.append(backdrop, frame)
   if (needsPopup) {
     // Never try an unsolicited popup during construction.
-    Promise.resolve().then(() => {
+    void Promise.resolve().then(() => {
       if (!core.isDestroyed && !usingPopup) {
-        core.reportError(new SamanDeskError('POPUP_REQUIRED', 'Call openPopup() directly from a user click to connect to the deployed web app in a standalone window.'))
+        core.reportError(
+          new SamanDeskError(
+            'POPUP_REQUIRED',
+            'Call openPopup() directly from a user click to connect to the deployed web app in a standalone window.',
+          ),
+        )
       }
     })
   } else {
@@ -298,4 +366,3 @@ export function createSamanDeskWeb(config: SamanDeskConfig, options: WebOptions 
   }
   return webApi
 }
-

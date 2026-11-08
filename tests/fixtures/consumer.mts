@@ -7,7 +7,7 @@ import {
 
 const config: SamanDeskConfig = {
   workspaceID: 'workspace',
-  onError: error => {
+  onError: (error) => {
     if (error instanceof SamanDeskError) console.log(error.code)
   },
 }
@@ -18,8 +18,8 @@ web.retry()
 web.destroy()
 
 const native = createSamanDeskReactNative(config, {
-  onStateChange: state => console.log(state.visible),
-  injectJavaScript: script => console.log(script),
+  onStateChange: (state) => console.log(state.visible),
+  injectJavaScript: (script) => console.log(script),
 })
 native.getWebViewProps().onMessage({ nativeEvent: { data: '{}' } })
 native.destroy()

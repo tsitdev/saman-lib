@@ -38,6 +38,12 @@
     "test": "vp test --project unit",
     "test:package": "bun run build && vp test --project package",
     "typecheck": "tsc --noEmit && tsc --project tsconfig.tools.json --noEmit",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "format": "vp fmt",
+    "format:check": "vp fmt --check",
+    "check": "vp check",
+    "prepare": "vp config --no-agent",
     "prepublishOnly": "bun run build"
   },
   "devDependencies": {

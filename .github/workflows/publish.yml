@@ -61,6 +61,9 @@ jobs:
       - name: Check types
         run: bun run typecheck
 
+      - name: Check lint and formatting
+        run: bun run check
+
       - name: Run tests
         run: bun run test
 

@@ -12,8 +12,8 @@ web.close()
 web.destroy()
 
 const native = createSamanDeskReactNative(config, {
-  onStateChange: state => console.log(state.source.uri),
-  injectJavaScript: script => console.log(script),
+  onStateChange: (state) => console.log(state.source.uri),
+  injectJavaScript: (script) => console.log(script),
 })
 native.retry()
 native.destroy()

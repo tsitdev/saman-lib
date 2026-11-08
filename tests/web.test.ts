@@ -6,17 +6,32 @@ type Support = ReturnType<typeof createSamanDeskWeb>
 const instances: Support[] = []
 const origin = 'https://samandesk.com'
 
-function create(config: Partial<SamanDeskConfig> = {}, options: Parameters<typeof createSamanDeskWeb>[1] = {}) {
+function create(
+  config: Partial<SamanDeskConfig> = {},
+  options: Parameters<typeof createSamanDeskWeb>[1] = {},
+) {
   const onReady = vi.fn()
   const onClose = vi.fn()
   const onError = vi.fn()
-  const api = createSamanDeskWeb({ workspaceID: 'workspace', onReady, onClose, onError, ...config }, options)
+  const api = createSamanDeskWeb(
+    { workspaceID: 'workspace', onReady, onClose, onError, ...config },
+    options,
+  )
   instances.push(api)
   const frame = document.querySelector<HTMLIFrameElement>('iframe:last-of-type')!
-  const send = (action: string, data?: unknown, source: MessageEventSource | null = frame.contentWindow, eventOrigin = origin) => {
-    window.dispatchEvent(new MessageEvent('message', {
-      source, origin: eventOrigin, data: { from: 'SamanDesk', action, data },
-    }))
+  const send = (
+    action: string,
+    data?: unknown,
+    source: MessageEventSource | null = frame.contentWindow,
+    eventOrigin = origin,
+  ) => {
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        source,
+        origin: eventOrigin,
+        data: { from: 'SamanDesk', action, data },
+      }),
+    )
   }
   return { api, frame, send, onReady, onClose, onError }
 }
@@ -26,7 +41,9 @@ function createPopup() {
     closed: false,
     location: { href: 'about:blank' },
     focus: vi.fn(),
-    close: vi.fn(() => { popup.closed = true }),
+    close: vi.fn(() => {
+      popup.closed = true
+    }),
   }
   vi.spyOn(window, 'open').mockReturnValue(popup as unknown as Window)
   return popup
@@ -37,7 +54,10 @@ beforeEach(() => {
   // The remote app is a message boundary. Keep a real iframe window without
   // allowing tests to navigate to the production service.
   const createElement = document.createElement.bind(document)
-  vi.spyOn(document, 'createElement').mockImplementation(((tagName: string, options?: ElementCreationOptions) => {
+  vi.spyOn(document, 'createElement').mockImplementation(((
+    tagName: string,
+    options?: ElementCreationOptions,
+  ) => {
     const element = createElement(tagName, options)
     if (tagName === 'iframe') element.setAttribute('srcdoc', '<!doctype html><html></html>')
     return element
@@ -45,7 +65,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  instances.splice(0).forEach(api => api.destroy())
+  instances.splice(0).forEach((api) => api.destroy())
   document.body.replaceChildren()
   vi.useRealTimers()
 })
@@ -238,7 +258,9 @@ describe('standalone windows', () => {
 
   it('falls back to a popup when a cross-origin portal blocks top-window access', () => {
     const top = {
-      addEventListener: () => { throw new DOMException('Access denied', 'SecurityError') },
+      addEventListener: () => {
+        throw new DOMException('Access denied', 'SecurityError')
+      },
     }
     vi.spyOn(window, 'top', 'get').mockReturnValue(top as unknown as Window)
     const popup = createPopup()

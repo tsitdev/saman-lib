@@ -18,7 +18,7 @@ export interface SamanDeskConfig {
    */
   theme?: Partial<ProjectTheme>
   /** زبان کتابخانه */
-  language?: 'fa' | 'en' | 'ar' | string
+  language?: string
   /** آدرس سرور */
   siteUrl?: string
   /** Maximum time to load the login page or receive the SSO session. Default: 30000 ms. */
@@ -52,7 +52,10 @@ export type SamanDeskErrorCode =
   | 'DESTROYED'
 
 export class SamanDeskError extends Error {
-  constructor(public readonly code: SamanDeskErrorCode, message: string) {
+  constructor(
+    public readonly code: SamanDeskErrorCode,
+    message: string,
+  ) {
     super(`[SamanDesk] ${message}`)
     this.name = 'SamanDeskError'
   }

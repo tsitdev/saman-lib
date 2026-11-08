@@ -27,7 +27,7 @@ function create(config: Partial<SamanDeskConfig> = {}) {
 
 beforeEach(() => vi.useFakeTimers())
 afterEach(() => {
-  instances.splice(0).forEach(api => api.destroy())
+  instances.splice(0).forEach((api) => api.destroy())
   vi.useRealTimers()
 })
 
@@ -35,7 +35,8 @@ describe('React Native integration', () => {
   it('exposes the initial guest state without firing a state callback', () => {
     const { api, onStateChange } = create()
     expect(api.getState()).toEqual({
-      source: { uri: 'https://samandesk.com/guest-login/workspace' }, visible: true,
+      source: { uri: 'https://samandesk.com/guest-login/workspace' },
+      visible: true,
     })
     expect(onStateChange).not.toHaveBeenCalled()
   })
@@ -46,7 +47,8 @@ describe('React Native integration', () => {
     expect(api.getState().visible).toBe(false)
     send('setToken', { token: 'session +' })
     expect(api.getState()).toEqual({
-      source: { uri: 'https://samandesk.com/department-selection?token=session%20%2B' }, visible: true,
+      source: { uri: 'https://samandesk.com/department-selection?token=session%20%2B' },
+      visible: true,
     })
     const source = api.getState().source
     api.open()
@@ -84,7 +86,11 @@ describe('React Native integration', () => {
     const oldProps = api.getWebViewProps()
     api.retry()
     expect(api.getWebViewProps().key).not.toBe(oldProps.key)
-    oldProps.onMessage({ nativeEvent: { data: JSON.stringify({ from: 'SamanDesk', action: 'setToken', data: { token: 'stale' } }) } })
+    oldProps.onMessage({
+      nativeEvent: {
+        data: JSON.stringify({ from: 'SamanDesk', action: 'setToken', data: { token: 'stale' } }),
+      },
+    })
     oldProps.onError()
     expect(onReady).not.toHaveBeenCalled()
     expect(onError).not.toHaveBeenCalled()
@@ -108,13 +114,25 @@ describe('React Native integration', () => {
     runInNewContext(injectJavaScript.mock.calls[0][0], {
       window: { dispatchEvent },
       MessageEvent: class {
-        constructor(public type: string, public options: unknown) {}
+        constructor(
+          public type: string,
+          public options: unknown,
+        ) {}
       },
     })
-    expect(dispatchEvent).toHaveBeenCalledWith(expect.objectContaining({
-      type: 'message',
-      options: { data: { from: 'SamanDesk', action: 'getConfig', id: 1, data: { color: 'teal', theme: 'dark', language: 'fa' } } },
-    }))
+    expect(dispatchEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'message',
+        options: {
+          data: {
+            from: 'SamanDesk',
+            action: 'getConfig',
+            id: 1,
+            data: { color: 'teal', theme: 'dark', language: 'fa' },
+          },
+        },
+      }),
+    )
   })
 
   it('ignores HTTP errors for unrelated resources but fails on document errors', () => {

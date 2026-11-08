@@ -3,6 +3,38 @@ import { copyFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
 export default defineConfig({
+  lint: {
+    ignorePatterns: ['dist/**', 'coverage/**', '.vite-hooks/_/**'],
+    options: {
+      typeAware: true,
+      typeCheck: true,
+      denyWarnings: true,
+    },
+    categories: {
+      correctness: 'error',
+    },
+    rules: {
+      eqeqeq: 'error',
+      'no-debugger': 'error',
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+    },
+  },
+  fmt: {
+    ignorePatterns: ['dist/**', 'coverage/**', 'bun.lock', '.vite-hooks/_/**'],
+    semi: false,
+    singleQuote: true,
+    tabWidth: 2,
+    printWidth: 100,
+    trailingComma: 'all',
+    endOfLine: 'lf',
+    sortImports: false,
+    sortPackageJson: false,
+    proseWrap: 'preserve',
+    embeddedLanguageFormatting: 'off',
+  },
+  staged: {
+    '*': 'vp check --fix',
+  },
   pack: {
     entry: { 'saman-desk': 'src/index.ts' },
     format: {

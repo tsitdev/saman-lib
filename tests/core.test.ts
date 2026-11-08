@@ -11,7 +11,12 @@ class TestCore extends SamanDeskCore {
 }
 
 const instances: TestCore[] = []
-const message = (action: string, data?: unknown, id?: number) => ({ from: 'SamanDesk', action, data, id })
+const message = (action: string, data?: unknown, id?: number) => ({
+  from: 'SamanDesk',
+  action,
+  data,
+  id,
+})
 
 function create(config: Partial<SamanDeskConfig> = {}) {
   const core = new TestCore({ workspaceID: 'workspace', ...config })
@@ -21,7 +26,7 @@ function create(config: Partial<SamanDeskConfig> = {}) {
 
 beforeEach(() => vi.useFakeTimers())
 afterEach(() => {
-  instances.splice(0).forEach(core => core.destroy())
+  instances.splice(0).forEach((core) => core.destroy())
   vi.useRealTimers()
 })
 
@@ -47,9 +52,10 @@ describe('configuration and destinations', () => {
     { workspaceID: 'workspace', siteUrl: 'https://user:password@example.com' },
     { workspaceID: 'workspace', siteUrl: 'https://example.com/?token=secret' },
     { workspaceID: 'workspace', siteUrl: 'https://example.com/#fragment' },
-  ])('rejects invalid configuration: %j', config => {
-    expect(() => new TestCore(config as SamanDeskConfig))
-      .toThrow(expect.objectContaining({ code: 'INVALID_CONFIG' }))
+  ])('rejects invalid configuration: %j', (config) => {
+    expect(() => new TestCore(config as SamanDeskConfig)).toThrow(
+      expect.objectContaining({ code: 'INVALID_CONFIG' }),
+    )
   })
 
   it('normalizes the base URL and credentials and prefers verified login', () => {
@@ -58,10 +64,16 @@ describe('configuration and destinations', () => {
       workspaceID: ' workspace ',
       verifiedToken: ' input/token + ',
     })
-    expect(core.getInitialUrl()).toBe('https://support.example.com/base/setup-interoperation/input%2Ftoken%20%2B')
+    expect(core.getInitialUrl()).toBe(
+      'https://support.example.com/base/setup-interoperation/input%2Ftoken%20%2B',
+    )
     core.handleIncomingMessage(message('setToken', { token: ' session/token + ' }))
-    expect(core.getOpenUrl()).toBe('https://support.example.com/base/department-selection?token=session%2Ftoken%20%2B')
-    expect(core.getOpenUrl('conversation/123')).toBe('https://support.example.com/base/conversation/123')
+    expect(core.getOpenUrl()).toBe(
+      'https://support.example.com/base/department-selection?token=session%2Ftoken%20%2B',
+    )
+    expect(core.getOpenUrl('conversation/123')).toBe(
+      'https://support.example.com/base/conversation/123',
+    )
   })
 
   it.each([
@@ -71,9 +83,10 @@ describe('configuration and destinations', () => {
     'https://samandesk.com:8443/conversation',
     'https://user:secret@samandesk.com/conversation',
     'javascript:alert(1)',
-  ])('rejects an unsafe or cross-origin destination: %s', link => {
-    expect(() => create().getOpenUrl(link))
-      .toThrow(expect.objectContaining({ code: 'INVALID_LINK' }))
+  ])('rejects an unsafe or cross-origin destination: %s', (link) => {
+    expect(() => create().getOpenUrl(link)).toThrow(
+      expect.objectContaining({ code: 'INVALID_LINK' }),
+    )
   })
 })
 
@@ -81,8 +94,8 @@ describe('authentication lifecycle', () => {
   it('delivers each new session once and in the documented order', () => {
     const calls: string[] = []
     const core = create({
-      onReady: token => calls.push('ready:' + token),
-      onTokenChange: token => calls.push('token:' + token),
+      onReady: (token) => calls.push('ready:' + token),
+      onTokenChange: (token) => calls.push('token:' + token),
     })
     core.startHandshake()
     core.handleIncomingMessage(message('setToken', { token: 'first' }))
@@ -131,20 +144,29 @@ describe('authentication lifecycle', () => {
     expect(core.hasFailed).toBe(false)
   })
 
-  it.each(['', ' ', 'null', 'undefined', 42, null])('rejects an invalid session token: %j', token => {
-    const onError = vi.fn()
-    const core = create({ onError })
-    core.startHandshake()
-    core.handleIncomingMessage(message('setToken', { token }))
-    expect(onError).toHaveBeenCalledWith(expect.objectContaining({ code: 'INVALID_MESSAGE' }))
-    expect(core.isReady).toBe(false)
-  })
+  it.each(['', ' ', 'null', 'undefined', 42, null])(
+    'rejects an invalid session token: %j',
+    (token) => {
+      const onError = vi.fn()
+      const core = create({ onError })
+      core.startHandshake()
+      core.handleIncomingMessage(message('setToken', { token }))
+      expect(onError).toHaveBeenCalledWith(expect.objectContaining({ code: 'INVALID_MESSAGE' }))
+      expect(core.isReady).toBe(false)
+    },
+  )
 
   it('ignores malformed messages and messages with an unrelated sender', () => {
     const onReady = vi.fn()
     const onError = vi.fn()
     const core = create({ onReady, onError })
-    for (const data of ['not-json', null, 123, {}, { from: 'other', action: 'setToken', data: { token: 'stolen' } }]) {
+    for (const data of [
+      'not-json',
+      null,
+      123,
+      {},
+      { from: 'other', action: 'setToken', data: { token: 'stolen' } },
+    ]) {
       core.handleIncomingMessage(data)
     }
     expect(onReady).not.toHaveBeenCalled()
@@ -155,16 +177,22 @@ describe('authentication lifecycle', () => {
     const core = create({ verifiedToken: 'secret', theme: { color: 'teal' }, language: 'en' })
     core.handleIncomingMessage(message('getConfig', undefined, 7))
     core.handleIncomingMessage(message('getConfig', undefined, NaN))
-    expect(core.messages).toEqual([{
-      from: 'SamanDesk', action: 'getConfig', id: 7,
-      data: { color: 'teal', theme: 'light', language: 'en' },
-    }])
+    expect(core.messages).toEqual([
+      {
+        from: 'SamanDesk',
+        action: 'getConfig',
+        id: 7,
+        data: { color: 'teal', theme: 'light', language: 'en' },
+      },
+    ])
   })
 
   it('reports callback exceptions without losing a valid session', () => {
     const onError = vi.fn()
     const core = create({
-      onReady: () => { throw new Error('host callback failed') },
+      onReady: () => {
+        throw new Error('host callback failed')
+      },
       onError,
     })
     core.handleIncomingMessage(message('setToken', { token: 'session' }))
