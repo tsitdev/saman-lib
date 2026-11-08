@@ -1,0 +1,43 @@
+{
+  "name": "samandesk",
+  "version": "2.0.0-beta2.0",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tsitdev/saman-lib.git"
+  },
+  "homepage": "https://github.com/tsitdev/saman-lib#readme",
+  "bugs": {
+    "url": "https://github.com/tsitdev/saman-lib/issues"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/saman-desk.umd.cjs",
+  "module": "./dist/saman-desk.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/saman-desk.js",
+      "require": "./dist/saman-desk.umd.cjs"
+    }
+  },
+  "scripts": {
+    "start": "yarn link && cross-env VITE_DEV_MODE=1 yarn vite build --watch",
+    "build": "cross-env VITE_DEV_MODE=0 vite build",
+    "prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "25.9.3",
+    "cross-env": "^7.0.3",
+    "terser": "^5.39.0",
+    "typescript": "^5.8.3",
+    "utility-types": "^3.11.0",
+    "vite": "^6.3.3",
+    "vite-plugin-dts": "^4.5.3"
+  }
+}
