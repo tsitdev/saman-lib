@@ -1,510 +1,436 @@
 <div dir="rtl" align="right">
 
-# ‏سامان دسک — راهنمای وب و موبایل
+# ‏راهنمای استفاده از سامان دسک
 
-‏کتابخانهٔ اتصال به رابط پشتیبانی سامان دسک در وب و ⁦React Native.⁩ نسخهٔ وب رابط را در قاب یا پنجرهٔ مستقل نمایش می‌دهد؛ نسخهٔ ⁦React Native⁩ مدیریت وضعیت و ارتباط با ⁦<code dir="ltr">WebView</code>⁩ را فراهم می‌کند. رابط چت از سرور سامان دسک بارگذاری می‌شود و داخل پکیج قرار ندارد.
+‏پکیج ⁦`samandesk`⁩ بخش پشتیبانی سامان دسک را به وب‌سایت یا اپلیکیشن شما اضافه می‌کند. کاربر می‌تواند به‌عنوان مهمان وارد شود یا با توکنی که سرویس شما در اختیار برنامه قرار می‌دهد، به حساب خود متصل شود.
 
-‏این راهنما رفتار کد فعلی این شاخه را شرح می‌دهد. اصلاحات کتابخانه با قرارداد پیام وب‌اپ فعلی کار می‌کنند و به انتشار پروژهٔ اصلی وابسته نیستند. نمونه‌های دارای ⁦<code dir="ltr">retry()</code>⁩، ⁦<code dir="ltr">openPopup()</code>⁩ و خطاهای کددار به خروجی اصلاح‌شده نیاز دارند و در نسخهٔ منتشرشدهٔ ⁦<code dir="ltr">2.0.0-beta2.0</code>⁩ موجود نیستند.
-
-‏این فایل مرجع استفاده از نسخهٔ فعلی پکیج و مهاجرت از نسخهٔ ۱ است. شمارهٔ نسخهٔ ⁦<code dir="ltr">node_modules/samandesk/package.json</code>⁩ را با نسخهٔ این راهنما تطبیق دهید؛ مستندات مستقل نسخه‌های قدیمی نگهداری نمی‌شوند.
+‏برای وب از ⁦`createSamanDeskWeb`⁩ و برای ⁦React Native⁩ از ⁦`createSamanDeskReactNative`⁩ استفاده کنید. این راهنما روش استفاده از نسخهٔ ۲ کتابخانه را توضیح می‌دهد.
 
 ## ‏فهرست مطالب
 
 - ‏[نصب و پیش‌نیازها](#installation)
-- ‏[شروع سریع و ورود مهمان](#quick-start)
-- ‏[تنظیمات مشترک و رنگ‌ها](#configuration)
-- ‏[وب، مرورگر، ⁦Vue / Nuxt⁩ و ⁦React / Next.js⁩](#web)
-- ‏[ورود با توکن](#token-login)
-- ‏[⁦React Native⁩ و ⁦WebView⁩](#react-native)
-- ‏[خروجی‌ها و نوع‌های ⁦TypeScript⁩](#types)
-- ‏[پروتکل تبادل پیام](#protocol)
-- ‏[محدودیت‌ها و رفع مشکل](#troubleshooting)
-- ‏[راهنمای مهاجرت از نسخهٔ ۱](#migration)
-- ‏[توسعه و انتشار کتابخانه](#development)
+- ‏[شروع سریع در وب](#quick-start)
+- ‏[ورود با حساب کاربر](#token-login)
+- ‏[باز و بسته‌کردن چت](#web)
+- ‏[تنظیمات، ظاهر و رویدادها](#configuration)
+- ‏[استفاده در ⁦Vue / Nuxt⁩](#vue)
+- ‏[استفاده در ⁦React / Next.js⁩](#react)
+- ‏[استفاده در صفحهٔ ⁦HTML⁩](#html)
+- ‏[استفاده در ⁦React Native⁩](#react-native)
+- ‏[مدیریت خطا و تلاش دوباره](#errors)
+- ‏[بازکردن چت در پنجرهٔ جدا](#popup)
+- ‏[نوع‌های ⁦TypeScript⁩](#types)
+- ‏[مهاجرت از نسخهٔ ۱](#migration)
 
 <a id="installation"></a>
 
 ## ‏نصب و پیش‌نیازها
 
+‏برای نصب نسخهٔ بتا، یکی از دستورهای زیر را اجرا کنید:
 
 </div>
 
 <div dir="ltr" align="left">
 
-```bash
-npm install samandesk@2.0.0-beta2.0
-```
+~~~bash
+# Bun
+bun add samandesk@beta
+
+# npm
+npm install samandesk@beta
+~~~
 
 </div>
 
 <div dir="rtl" align="right">
 
+‏پیش از راه‌اندازی، روش ورود را انتخاب کنید:
 
-- ‏برای ورود مهمان، شناسهٔ محیط کاری (⁦<code dir="ltr">workspaceID</code>⁩) لازم است.
-- ‏برای ورود با توکن، ⁦<code dir="ltr">verifiedToken</code>⁩ معتبرِ مورد پذیرش سرور سامان دسک لازم است. دریافت این توکن از سرویس پروژهٔ میزبان انجام می‌شود؛ این پکیج ⁦API⁩ دریافت یا ساخت آن را ندارد.
-- ‏مرورگر یا ⁦WebView⁩ باید به سرور سامان دسک دسترسی داشته باشد. اجرای آفلاین پشتیبانی نمی‌شود.
-- ‏در وب، نمونه را بعد از آماده‌شدن ⁦<code dir="ltr">document.body</code>⁩ و فقط سمت کلاینت بسازید.
-- ‏در ⁦React Native⁩، نصب و راه‌اندازی ⁦<code dir="ltr">react-native-webview</code>⁩ بر عهدهٔ پروژهٔ میزبان است؛ خود پکیج کامپوننت ⁦React⁩ یا ⁦WebView⁩ ارائه نمی‌کند.
+| ‏روش ورود | ‏چه چیزی لازم دارید؟ | ‏کاربر چه می‌بیند؟ |
+| --- | --- | --- |
+| ‏ورود مهمان | ‏شناسهٔ محیط کاری در ⁦`workspaceID`⁩ | ‏فرم ورود سامان دسک؛ کاربر مراحل ورود را در همان فرم انجام می‌دهد. |
+| ‏ورود با حساب کاربر | ‏توکن معتبر در ⁦`verifiedToken`⁩ | ‏ورود با توکنی که سرویس شما در اختیار برنامه قرار داده است. |
+
+‏کتابخانه توکن ورود تولید نمی‌کند. برای ورود با حساب کاربر، ابتدا توکن معتبر را از سرویس مربوط به پروژهٔ خود دریافت کنید.
+
+‏برای نمایش چت، دسترسی به سرور سامان دسک لازم است. در وب، نمونه را فقط در مرورگر و بعد از آماده‌شدن بدنهٔ صفحه بسازید؛ مثال‌های ⁦Vue⁩ و ⁦React⁩ در ادامه محل مناسب این کار را نشان می‌دهند. در ⁦React Native⁩ نیز باید پکیج ⁦`react-native-webview`⁩ را جداگانه نصب و راه‌اندازی کنید.
 
 <a id="quick-start"></a>
 
-## ‏شروع سریع — ورود مهمان در وب
+## ‏شروع سریع در وب
 
-‏این مثال در فایل ⁦JavaScript⁩ پروژه‌ای با ⁦bundler⁩ اجرا می‌شود. ایجاد نمونه بدون ⁦<code dir="ltr">verifiedToken</code>⁩ بلافاصله فرم ورود مهمان را نمایش می‌دهد. فراخوانی زودهنگام ⁦<code dir="ltr">open()</code>⁩ ورود را قطع نمی‌کند؛ درخواست تا دریافت توکن نگه داشته می‌شود.
-
+‏این مثال برای پروژه‌ای است که از ⁦`import`⁩ استفاده می‌کند. مقدار ⁦`YOUR_WORKSPACE_ID`⁩ را با شناسهٔ محیط کاری خود جایگزین کنید:
 
 </div>
 
 <div dir="ltr" align="left">
 
-```js
+~~~js
 import { createSamanDeskWeb } from 'samandesk'
 
-// اجرا بعد از آماده‌شدن document.body
 const support = createSamanDeskWeb({
   workspaceID: 'YOUR_WORKSPACE_ID',
-  language: 'fa',
-  theme: { darkMode: 'light', color: 'default' },
-  onReady: () => {
-    // توکن نشست دریافت شده؛ اکنون می‌توان صفحهٔ دپارتمان‌ها را باز کرد.
-    support.open()
-  },
-  linkHandler: (link) => {
-    const url = new URL(link)
-    if (['https:', 'http:'].includes(url.protocol)) {
-      window.open(url.href, '_blank', 'noopener,noreferrer')
-    }
-  },
+  onError: (error) => console.error(error),
 })
 
-// پس از ورود: support.open()
-// بستن: support.close()
-// هنگام حذف بخش میزبان: support.destroy()
-```
+support.open()
+~~~
 
 </div>
 
 <div dir="rtl" align="right">
 
+‏در حالت معمول وب، ساخت نمونهٔ مهمان، فرم ورود را بلافاصله نمایش می‌دهد. دستور ⁦`open()`⁩ در مثال بالا باعث می‌شود پس از تکمیل ورود و دریافت توکن نشست، صفحهٔ انتخاب دپارتمان هم باز شود. لازم نیست پیش از این دستور منتظر پایان ورود بمانید؛ کتابخانه آخرین درخواست بازکردن را نگه می‌دارد.
 
-‏ورود مهمان شامل فرم اطلاعات و تأیید ⁦OTP⁩ است. پس از دریافت توکن، میزبان باید با ⁦<code dir="ltr">open()</code>⁩ صفحهٔ انتخاب دپارتمان را باز کند؛ دریافت توکن به‌تنهایی این جابه‌جایی را انجام نمی‌دهد.
+‏برای بازکردن دوبارهٔ چت، همان ⁦`support.open()`⁩ را صدا بزنید. برای بستن از ⁦`support.close()`⁩ استفاده کنید. هر بار نمونهٔ جدید نسازید؛ تا زمانی که صفحه یا کامپوننت به پشتیبانی نیاز دارد، همان نمونه را نگه دارید و در پایان استفاده، ⁦`support.destroy()`⁩ را فراخوانی کنید.
 
-<a id="configuration"></a>
+<a id="token-login"></a>
 
-## ‏تنظیمات مشترک: ⁦SamanDeskConfig⁩
+## ‏ورود با حساب کاربر
 
-‏آرگومان اول هر دو تابع سازنده است. برای ورود باید یکی از ⁦<code dir="ltr">workspaceID</code>⁩ یا ⁦<code dir="ltr">verifiedToken</code>⁩ معتبر باشد. اگر هر دو تنظیم شوند، ⁦<code dir="ltr">verifiedToken</code>⁩ اولویت دارد. ورودی خالی، مقدار نامعتبر، رشته‌های ⁦<code dir="ltr">undefined</code>⁩ و ⁦<code dir="ltr">null</code>⁩ و آدرس نامعتبر، پیش از ایجاد قاب با خطای همگام ⁦<code dir="ltr">INVALID_CONFIG</code>⁩ رد می‌شوند؛ گزینهٔ استفاده‌نشده را حذف کنید.
-
-| ‏گزینه | ‏نوع | ‏پیش‌فرض / کاربرد |
-| ---: | ---: | ---: |
-| ‏⁦<code dir="ltr">workspaceID</code>⁩ | ‏⁦<code dir="ltr">string</code>⁩ | ‏بدون پیش‌فرض؛ شناسهٔ محیط کاری برای ورود مهمان |
-| ‏⁦<code dir="ltr">verifiedToken</code>⁩ | ‏⁦<code dir="ltr">string</code>⁩ | ‏بدون پیش‌فرض؛ توکن ورودی برای راه‌اندازی نشست |
-| ‏⁦<code dir="ltr">siteUrl</code>⁩ | ‏⁦<code dir="ltr">string</code>⁩ | ‏⁦<code dir="ltr">https://samandesk.com</code>⁩ در خروجی انتشار؛ آدرس پایهٔ وب‌اپ |
-| ‏⁦<code dir="ltr">language</code>⁩ | ‏⁦<code dir="ltr">string</code>⁩ | ‏⁦<code dir="ltr">fa</code>⁩؛ صفحات ورود مهمان و انتخاب دپارتمان فعلاً ⁦<code dir="ltr">fa</code>⁩ و ⁦<code dir="ltr">en</code>⁩ را می‌پذیرند و برای مقادیر دیگر به زبان پیش‌فرض برنامه برمی‌گردند |
-| ‏⁦<code dir="ltr">theme</code>⁩ | ‏⁦<code dir="ltr">Partial&lt;ProjectTheme&gt;</code>⁩ | ‏⁦<code dir="ltr">{ darkMode: 'light', color: 'default' }</code>⁩؛ فیلدهای حذف‌شده نیز هنگام پاسخ به وب‌اپ همین مقادیر را می‌گیرند |
-| ‏⁦<code dir="ltr">linkHandler</code>⁩ | ‏⁦<code dir="ltr">(link: string) =&gt; void</code>⁩ | ‏دریافت درخواست بازکردن لینک از داخل رابط؛ بدون این تابع فقط هشدار در ⁦console⁩ ثبت می‌شود |
-| ‏⁦<code dir="ltr">handshakeTimeoutMs</code>⁩ | ‏⁦<code dir="ltr">number</code>⁩ | ‏پیش‌فرض ۳۰٬۰۰۰ میلی‌ثانیه؛ مهلت دریافت توکن در ورود مستقیم یا آماده‌شدن فرم مهمان؛ زمان واردکردن اطلاعات و ⁦OTP⁩ را محدود نمی‌کند |
-| ‏⁦<code dir="ltr">onReady</code>⁩ | ‏⁦<code dir="ltr">(token: string) =&gt; void</code>⁩ | ‏پس از دریافت توکن معتبر؛ پیام تکراری با همان توکن نادیده گرفته می‌شود |
-| ‏⁦<code dir="ltr">onTokenChange</code>⁩ | ‏⁦<code dir="ltr">(token: string) =&gt; void</code>⁩ | ‏پس از ⁦<code dir="ltr">onReady</code>⁩ با توکن جدید |
-| ‏⁦<code dir="ltr">onOpen</code>⁩ | ‏⁦<code dir="ltr">() =&gt; void</code>⁩ | ‏هنگام نمایش از طریق آداپتر؛ نشانهٔ پایان بارگذاری نیست |
-| ‏⁦<code dir="ltr">onClose</code>⁩ | ‏⁦<code dir="ltr">() =&gt; void</code>⁩ | ‏هنگام تغییر از نمایان به مخفی؛ بستن تکراری و پاکسازی نمونهٔ مخفی دوباره آن را اجرا نمی‌کند |
-| ‏⁦<code dir="ltr">onGuestReady</code>⁩ | ‏⁦<code dir="ltr">() =&gt; void</code>⁩ | ‏هنگام ⁦mount⁩ صفحهٔ ورود مهمان؛ به معنی ورود موفق یا دریافت توکن نیست |
-| ‏⁦<code dir="ltr">onError</code>⁩ | ‏⁦<code dir="ltr">(error: Error) =&gt; void</code>⁩ | ‏خطای ورود، بارگذاری یا پایان مهلت؛ خطا از نوع ⁦<code dir="ltr">SamanDeskError</code>⁩ است. بدون این تابع خطا در کنسول ثبت می‌شود |
-
-
-‏پارامتر ⁦<code dir="ltr">siteUrl</code>⁩ آدرس مطلق وب‌اپ است، مانند ⁦<code dir="ltr">https://samandesk.com</code>⁩. اسلش پایانی عادی‌سازی می‌شود؛ مسیر پایه نیز پذیرفته می‌شود و ⁦origin⁩ پیام مستقل از مسیر محاسبه می‌شود. آدرس نباید نام کاربری، رمز، پرس‌وجو یا قطعه داشته باشد. پیش‌فرض همیشه سرور عمومی است؛ برای توسعه، ⁦<code dir="ltr">siteUrl: 'http://localhost:2525'</code>⁩ را صریح تنظیم کنید. هر قاب فقط پیام‌های همان پنجره و همان ⁦origin⁩ را می‌پذیرد؛ تغییر دامنه با ریدایرکت نیازمند اصلاح آدرس تنظیم‌شده است.
-
-### ‏تم و رنگ‌ها
-
+‏اگر توکن ورود کاربر را از سرویس خود دریافت کرده‌اید، آن را در ⁦`verifiedToken`⁩ قرار دهید:
 
 </div>
 
 <div dir="ltr" align="left">
 
-```ts
-import type { ProjectTheme, SamanDeskConfig } from 'samandesk'
+~~~js
+import { createSamanDeskWeb } from 'samandesk'
 
-const theme: ProjectTheme = { darkMode: 'dark', color: 'teal' }
-const config: SamanDeskConfig = {
-  workspaceID: 'YOUR_WORKSPACE_ID',
-  theme,
-  language: 'en',
-}
-```
+const support = createSamanDeskWeb({
+  verifiedToken: 'VERIFIED_TOKEN_FROM_YOUR_SERVICE',
+  onError: (error) => console.error(error),
+})
 
-</div>
-
-<div dir="rtl" align="right">
-
-
-‏⁦<code dir="ltr">darkMode</code>⁩ یکی از ⁦<code dir="ltr">light</code>⁩ یا ⁦<code dir="ltr">dark</code>⁩ است. ⁦<code dir="ltr">color</code>⁩ نام یکی از رنگ‌های زیر است؛ مقدار ⁦hex⁩ دلخواه پذیرفته نمی‌شود:
-
-
-</div>
-
-<div dir="ltr" align="left">
-
-```text
-default, blue, red, darkGreen, orange, green, teal, absolute, pink,
-darkTeal, mint, darkPurple, dodgerBlue, darkGold, purple, brown, ferra
-```
+support.open()
+~~~
 
 </div>
 
 <div dir="rtl" align="right">
 
+‏ورود در پس‌زمینه شروع می‌شود و چت پس از دریافت توکن نشست نمایش داده می‌شود. اگر نمی‌خواهید چت خودکار باز شود، دستور آخر را حذف کنید و ⁦`open()`⁩ را به دکمهٔ پشتیبانی متصل کنید.
 
-| ‏شناسه رنگ (⁦`color`⁩) | ‏کد رنگ (⁦Light⁩) | ‏کد رنگ (⁦Dark⁩) | ‏پیش‌نمایش |
-| :--- | :--- | :--- | :---: |
-| `default` | `#40826D` | `#68B09D` | 🟢 |
-| `blue` | `#1D9CF0` | `#52B6FC` | 🔵 |
-| `red` | `#C2412D` | `#F69B8A` | 🔴 |
-| `darkGreen` | `#005141` | `#86D6BE` | 🌲 |
-| `orange` | `#E86D0F` | `#FFA36B` | 🟠 |
-| `green` | `#00BA7B` | `#00BA7B` | ❇️ |
-| `teal` | `#30B0C7` | `#5DD5EA` | 🐬 |
-| `absolute` | `#11232E` | `#DDE7EE` | 🌑 |
-| `pink` | `#EB43AD` | `#F7A7DA` | 🌸 |
-| `darkTeal` | `#344EA2` | `#A5B6EC` | 🌊 |
-| `mint` | `#00B2AA` | `#13C0B8` | 🍃 |
-| `darkPurple` | `#65558F` | `#D0BCFE` | 🟣 |
-| `dodgerBlue` | `#386CF8` | `#8EA7FF` | 🔷 |
-| `darkGold` | `#9C8410` | `#DDC66E` | 🟡 |
-| `purple` | `#8056E0` | `#B49CED` | 🪻 |
-| `brown` | `#A2845E` | `#CEAA7C` | 🟤 |
-| `ferra` | `#7D5260` | `#EFB8C8` | 🍷 |
+‏اگر هر دو مقدار ⁦`workspaceID`⁩ و ⁦`verifiedToken`⁩ را بدهید، ورود با توکن انجام می‌شود. تنظیمی را که به آن نیاز ندارید، حذف کنید؛ مقدار خالی یا رشته‌های ⁦`'undefined'`⁩ و ⁦`'null'`⁩ پذیرفته نمی‌شوند.
 
-‏تم و زبان در پاسخ به درخواست ⁦<code dir="ltr">getConfig</code>⁩ وب‌اپ اعمال می‌شوند. متدی برای تغییر زندهٔ تنظیمات در ⁦API⁩ عمومی وجود ندارد.
+‏توکنی که از ⁦`onReady`⁩ یا ⁦`onTokenChange`⁩ می‌گیرید، **توکن نشست سامان دسک** است و الزاماً با ⁦`verifiedToken`⁩ ورودی یکی نیست. آن را برای ساخت نمونهٔ جدید جایگزین توکن ورود نکنید، مگر سرویس شما صریحاً این کاربرد را پشتیبانی کند.
+
+‏اگر توکن ورود منقضی شده یا یک‌بارمصرف بوده و مصرف شده است، از سرویس خود توکن تازه بگیرید، نمونهٔ قبلی را با ⁦`destroy()`⁩ کنار بگذارید و نمونهٔ جدید بسازید. کتابخانه متدی برای تعویض توکن روی نمونهٔ موجود ندارد.
 
 <a id="web"></a>
 
-## ‏⁦API⁩ وب
+## ‏باز و بسته‌کردن چت
 
+‏تابع ⁦`createSamanDeskWeb(config, options?)`⁩ یک شیء با متدهای زیر برمی‌گرداند. ساخت نمونه و فراخوانی این متدها به ⁦`await`⁩ نیاز ندارد؛ پایان ورود را از طریق ⁦`onReady`⁩ دنبال کنید.
+
+| ‏متد | ‏کاربرد |
+| --- | --- |
+| ‏⁦`open(link?)`⁩ | ‏چت را باز می‌کند. اگر ورود تمام نشده باشد، آخرین درخواست تا دریافت توکن نگه داشته می‌شود. |
+| ‏⁦`openPopup(link?)`⁩ | ‏ورود و چت را در پنجرهٔ جدا باز می‌کند. آن را مستقیماً از رویداد کلیک کاربر صدا بزنید. |
+| ‏⁦`close()`⁩ | ‏چت را مخفی می‌کند؛ اگر چت در پنجرهٔ جدا باشد، پنجره بسته می‌شود. درخواست بازکردنِ در انتظار هم لغو می‌شود. |
+| ‏⁦`retry()`⁩ | ‏ورود را با همان تنظیمات و همان توکن ورودی از نو شروع می‌کند. در حالت پنجرهٔ جدا، به کلیک کاربر نیاز دارد. |
+| ‏⁦`destroy()`⁩ | ‏نمونه را می‌بندد و منابع آن را آزاد می‌کند. پس از آن، برای استفادهٔ دوباره باید نمونهٔ جدید بسازید. |
+
+‏⁦`close()`⁩ به معنی خروج از حساب نیست. در حالت نمایش داخل صفحه، بستن چت، ورودِ در حال انجام را هم متوقف نمی‌کند. ⁦`destroy()`⁩ نمونه را حذف می‌کند، اما کاربر را از حساب ذخیره‌شدهٔ خود سامان دسک خارج نمی‌کند.
+
+‏فراخوانی چندبارهٔ ⁦`close()`⁩ و ⁦`destroy()`⁩ مجاز است. فراخوانی ⁦`open()`⁩، ⁦`openPopup()`⁩ یا ⁦`retry()`⁩ پس از ⁦`destroy()`⁩ خطای ⁦`DESTROYED`⁩ می‌دهد.
+
+### ‏بازکردن یک مسیر مشخص
+
+‏بدون آرگومان، ⁦`open()`⁩ صفحهٔ انتخاب دپارتمان را با توکن نشست باز می‌کند. اگر لینک مشخصی از سامان دسک دارید، می‌توانید آن را به ⁦`open(link)`⁩ بدهید. لینک باید متعلق به همان مبدأِ ⁦`siteUrl`⁩ باشد؛ یعنی پروتکل، دامنه و پورت آن یکسان باشد. مسیر نسبی نیز پذیرفته می‌شود.
+
+‏⁦`open(link)`⁩ برای بازکردن سایت‌های دیگر نیست. برای لینک‌های بیرونی که از داخل چت درخواست می‌شوند، ⁦`linkHandler`⁩ را تنظیم کنید.
+
+‏بازکردن دوبارهٔ همان مقصد در چتی که هنوز باز است، صفحه را دوباره بارگذاری نمی‌کند.
+
+<a id="configuration"></a>
+
+## ‏تنظیمات، ظاهر و رویدادها
+
+‏آرگومان اول هر دو تابع وب و ⁦React Native⁩ تنظیمات مشترک است:
+
+| ‏گزینه | ‏پیش‌فرض | ‏توضیح |
+| --- | --- | --- |
+| ‏⁦`workspaceID`⁩ | ‏ندارد | ‏شناسهٔ محیط کاری برای ورود مهمان. |
+| ‏⁦`verifiedToken`⁩ | ‏ندارد | ‏توکن ورود دریافت‌شده از سرویس شما. |
+| ‏⁦`siteUrl`⁩ | ‏⁦`https://samandesk.com`⁩ | ‏آدرس وب‌اپ سامان دسک؛ فقط اگر از آدرس دیگری استفاده می‌کنید، آن را تغییر دهید. |
+| ‏⁦`language`⁩ | ‏⁦`fa`⁩ | ‏زبان درخواستی رابط؛ نمایش آن به زبان‌های پشتیبانی‌شده در وب‌اپ بستگی دارد. |
+| ‏⁦`theme.darkMode`⁩ | ‏⁦`light`⁩ | ‏یکی از دو مقدار ⁦`light`⁩ یا ⁦`dark`⁩. |
+| ‏⁦`theme.color`⁩ | ‏⁦`default`⁩ | ‏نام یکی از رنگ‌های پشتیبانی‌شده. |
+| ‏⁦`handshakeTimeoutMs`⁩ | ‏⁦`30000`⁩ | ‏مهلت راه‌اندازی به میلی‌ثانیه؛ باید عددی مثبت و حداکثر ⁦`2147483647`⁩ باشد. |
+| ‏⁦`linkHandler`⁩ | ‏ندارد | ‏تابعی که تصمیم می‌گیرد لینک درخواست‌شده از داخل چت چگونه باز شود. |
+
+‏مهلت راه‌اندازی در ورود با توکن، زمان انتظار برای دریافت توکن نشست است. در ورود مهمان، تا آماده‌شدن فرم ورود اعمال می‌شود؛ زمان کاربر برای پرکردن فرم و تکمیل ورود را محدود نمی‌کند.
+
+‏⁦`siteUrl`⁩ باید یک آدرس کامل با پروتکل ⁦`http`⁩ یا ⁦`https`⁩ باشد. آدرس می‌تواند مسیر پایه داشته باشد، اما نباید شامل نام کاربری، رمز عبور، ⁦query string⁩ یا بخش ⁦`#fragment`⁩ باشد. آدرس نهایی بعد از تغییر مسیرِ سرور هم باید با مبدأ تنظیم‌شده سازگار بماند.
+
+### ‏انتخاب ظاهر
 
 </div>
 
 <div dir="ltr" align="left">
 
-```text
-createSamanDeskWeb(config, options?)
-```
+~~~js
+const support = createSamanDeskWeb({
+  workspaceID: 'YOUR_WORKSPACE_ID',
+  language: 'fa',
+  theme: {
+    darkMode: 'dark',
+    color: 'teal',
+  },
+})
+~~~
 
 </div>
 
 <div dir="rtl" align="right">
 
-
-‏آرگومان دوم فقط مربوط به وب است:
-
-| ‏گزینه | ‏نوع | ‏پیش‌فرض / کاربرد |
-| ---: | ---: | ---: |
-| ‏⁦<code dir="ltr">mode</code>⁩ | ‏⁦<code dir="ltr">'auto' &#124; 'iframe' &#124; 'popup'</code>⁩ | ‏پیش‌فرض ⁦<code dir="ltr">auto</code>⁩؛ قاب در حالت معمول، پنجرهٔ مستقل در پورتال با بالاترین پنجرهٔ غیرقابل‌دسترسی. حالت ⁦<code dir="ltr">iframe</code>⁩ در این وضعیت خطای نیاز به پنجرهٔ مستقل می‌دهد. حالت ⁦<code dir="ltr">popup</code>⁩ از ابتدا منتظر کلیک کاربر می‌ماند |
-| ‏⁦<code dir="ltr">fullScreen</code>⁩ | ‏⁦<code dir="ltr">boolean</code>⁩ | ‏⁦<code dir="ltr">false</code>⁩؛ نمایش تمام‌صفحه |
-| ‏⁦<code dir="ltr">style.width</code>⁩ | ‏⁦<code dir="ltr">string</code>⁩ | ‏⁦<code dir="ltr">100%</code>⁩؛ فقط حالت پنجره‌ای، با سقف ثابت ⁦<code dir="ltr">500px</code>⁩ |
-| ‏⁦<code dir="ltr">style.height</code>⁩ | ‏⁦<code dir="ltr">string</code>⁩ | ‏⁦<code dir="ltr">100%</code>⁩؛ فقط حالت پنجره‌ای، با سقف ثابت ⁦<code dir="ltr">660px</code>⁩ |
-| ‏⁦<code dir="ltr">style.marginTop</code>⁩ | ‏⁦<code dir="ltr">number</code>⁩ | ‏⁦<code dir="ltr">0</code>⁩ پیکسل؛ فقط در تمام‌صفحه |
-| ‏⁦<code dir="ltr">style.marginBottom</code>⁩ | ‏⁦<code dir="ltr">number</code>⁩ | ‏⁦<code dir="ltr">0</code>⁩ پیکسل؛ فقط در تمام‌صفحه |
-
----
+‏برای رنگ، یکی از نام‌های زیر را بدهید. واردکردن کد رنگ دلخواه مانند ⁦`#30B0C7`⁩ پشتیبانی نمی‌شود.
 
 </div>
 
 <div dir="ltr" align="left">
 
-```js
+~~~text
+default, blue, red, darkGreen, orange, green, teal, absolute, pink,
+darkTeal, mint, darkPurple, dodgerBlue, darkGold, purple, brown, ferra
+~~~
+
+</div>
+
+<div dir="rtl" align="right">
+
+‏برای تغییر تنظیمات پس از راه‌اندازی، نمونهٔ قبلی را حذف و نمونهٔ جدید بسازید؛ متدی برای تغییر زندهٔ تم، زبان یا اطلاعات ورود وجود ندارد.
+
+### ‏اندازه و محل نمایش در وب
+
+‏تنظیمات نمایش را در آرگومان دوم ⁦`createSamanDeskWeb`⁩ بدهید:
+
+</div>
+
+<div dir="ltr" align="left">
+
+~~~js
 const support = createSamanDeskWeb(
   { workspaceID: 'YOUR_WORKSPACE_ID' },
   {
     fullScreen: true,
-    style: { marginTop: 64, marginBottom: 16 },
+    style: {
+      marginTop: 64,
+      marginBottom: 16,
+    },
   },
 )
-```
+~~~
 
 </div>
 
 <div dir="rtl" align="right">
 
+| ‏گزینه | ‏کاربرد |
+| --- | --- |
+| ‏⁦`fullScreen`⁩ | ‏با مقدار ⁦`true`⁩ چت تمام‌صفحه می‌شود. پیش‌فرض ⁦`false`⁩ است. |
+| ‏⁦`style.marginTop`⁩ و ⁦`style.marginBottom`⁩ | ‏فاصله از بالا و پایین، به پیکسل؛ فقط در حالت تمام‌صفحه. |
+| ‏⁦`style.width`⁩ و ⁦`style.height`⁩ | ‏اندازه با مقدار معتبر ⁦CSS⁩؛ فقط در حالت نمایش وسط صفحه. عرض حداکثر ⁦`500px`⁩ و ارتفاع حداکثر ⁦`660px`⁩ است. مقدار پیش‌فرض هر دو ⁦`100%`⁩ است. |
+| ‏⁦`mode`⁩ | ‏یکی از ⁦`auto`⁩، ⁦`iframe`⁩ یا ⁦`popup`⁩؛ پیش‌فرض ⁦`auto`⁩ است. توضیح این گزینه در [بخش پنجرهٔ جدا](#popup) آمده است. |
 
-‏خروجی سازنده متدهای زیر را دارد؛ هیچ‌کدام ⁦Promise⁩ یا مقدار بازگشتی ندارند:
+‏در حالت معمول، چت وسط صفحه و روی یک پس‌زمینهٔ تیره نمایش داده می‌شود؛ کلیک روی پس‌زمینه آن را می‌بندد. تنظیمات اندازه و تمام‌صفحهٔ بالا برای نمایش داخل صفحه‌اند و اندازهٔ پنجرهٔ جدا را تغییر نمی‌دهند.
 
-| ‏متد | ‏رفتار |
-| ---: | ---: |
-| ‏⁦<code dir="ltr">open(link?: string)</code>⁩ | ‏نمایش چت پس از دریافت توکن؛ درخواست زودهنگام در صف می‌ماند. لینک باید متعلق به دامنهٔ وب‌اپ باشد؛ لینک نامعتبر خطای همگام ⁦<code dir="ltr">INVALID_LINK</code>⁩ می‌دهد |
-| ‏⁦<code dir="ltr">openPopup(link?: string)</code>⁩ | ‏ورود و چت در پنجرهٔ مستقل؛ باید مستقیماً از کلیک کاربر فراخوانی شود. پنجرهٔ باز دوباره بارگذاری نمی‌شود؛ تغییر از قاب به پنجره، ورود تازه شروع می‌کند |
-| ‏⁦<code dir="ltr">close()</code>⁩ | ‏در حالت قاب، مخفی‌کردن بدون قطع ورود؛ در حالت پنجرهٔ مستقل، بستن پنجره و لغو مهلت انتظار |
-| ‏⁦<code dir="ltr">retry()</code>⁩ | ‏شروع دوبارهٔ ورود در قاب تازه با تنظیمات اولیه؛ پاسخ دیرهنگام قاب قبلی پذیرفته نمی‌شود |
-| ‏⁦<code dir="ltr">destroy()</code>⁩ | ‏حذف قاب، پس‌زمینه، شنونده و تایمر؛ پاکسازی تکراری بی‌اثر است |
+### ‏اطلاع از وضعیت چت
 
-‏بازکردن مجدد همان مقصد در قاب یا پنجرهٔ باز، صفحه را دوباره بارگذاری نمی‌کند و پیشرفت چت حفظ می‌شود. بستن، خروج از حساب نیست. برای حذف منابع نمونه، ⁦<code dir="ltr">destroy()</code>⁩ را اجرا کنید؛ بازکردن یا تلاش مجدد روی نمونهٔ پاک‌شده خطای همگام ⁦<code dir="ltr">DESTROYED</code>⁩ می‌دهد. پاکسازی نمونه، نشست ذخیره‌شدهٔ خود وب‌اپ را از حساب خارج نمی‌کند.
+‏این توابع را در همان آرگومان اول قرار دهید:
 
-### ‏مرورگر بدون ابزار بسته‌بندی
+| ‏تابع | ‏چه زمانی اجرا می‌شود؟ |
+| --- | --- |
+| ‏⁦`onReady(sessionToken)`⁩ | ‏وقتی توکن نشست معتبر دریافت شده و می‌توان چت را باز کرد. با دریافت توکن جدید ممکن است دوباره اجرا شود. |
+| ‏⁦`onTokenChange(sessionToken)`⁩ | ‏پس از ⁦`onReady`⁩، هم برای اولین توکن نشست و هم برای توکن‌های جدید. |
+| ‏⁦`onGuestReady()`⁩ | ‏وقتی فرم ورود مهمان آماده شده است؛ این رویداد به معنی ورود موفق نیست. |
+| ‏⁦`onOpen()`⁩ | ‏وقتی چت نمایش داده می‌شود؛ به معنی پایان بارگذاری نیست. در وب، نمایش اولیهٔ فرم مهمان هم می‌تواند هنگام ساخت نمونه این تابع را اجرا کند. |
+| ‏⁦`onClose()`⁩ | ‏وقتی چتِ نمایان با عملیات بستن مخفی می‌شود؛ بستن دوبارهٔ چتِ مخفی آن را تکرار نمی‌کند. |
+| ‏⁦`onError(error)`⁩ | ‏وقتی مشکلی در ورود، بارگذاری یا اجرای توابعی که شما داده‌اید رخ می‌دهد. خطاهای ورودی نامعتبر را جداگانه با ⁦`try/catch`⁩ بگیرید. |
 
-‏همان نسخهٔ مشخص‌شده در دستور نصب را در آدرس ⁦CDN⁩ استفاده کنید. این مثال را در انتهای ⁦<code dir="ltr">body</code>⁩ قرار دهید؛ فرم مهمان خودکار نمایش داده می‌شود و پس از دریافت توکن، صفحهٔ دپارتمان‌ها باز می‌شود.
+‏دریافت دوبارهٔ همان توکن نشست، ⁦`onReady`⁩ و ⁦`onTokenChange`⁩ را تکرار نمی‌کند. اگر در ⁦`onReady`⁩ نمونه را حذف کنید یا ورود را از نو شروع کنید، نباید انتظار اجرای ⁦`onTokenChange`⁩ برای همان تلاش قبلی را داشته باشید.
+
+‏در ⁦React Native⁩، نمایان‌بودن اولیهٔ فرم مهمان به‌تنهایی باعث اجرای ⁦`onOpen`⁩ نمی‌شود؛ برای نمایش اولیه از ⁦`getState()`⁩ استفاده کنید.
+
+### ‏بازکردن لینک‌های داخل چت
+
+‏اگر کاربر از داخل چت درخواست بازکردن لینکی را بدهد، آن لینک به ⁦`linkHandler`⁩ تحویل داده می‌شود. بدون این تابع، کتابخانه لینک را باز نمی‌کند. برای نمونه، در وب می‌توانید فقط لینک‌های وب را بپذیرید:
 
 </div>
 
 <div dir="ltr" align="left">
 
-```html
-<button id="support-button" disabled>پشتیبانی</button>
-<script type="module">
-  import { createSamanDeskWeb } from 'https://cdn.jsdelivr.net/npm/samandesk@2.0.0-beta2.0/dist/saman-desk.js'
-
-  const button = document.getElementById('support-button')
-  const support = createSamanDeskWeb({
-    workspaceID: 'YOUR_WORKSPACE_ID',
-    onReady: () => {
-      button.disabled = false
-      support.open()
-    },
-  })
-  button.addEventListener('click', () => support.open())
-</script>
-```
+~~~js
+const support = createSamanDeskWeb({
+  workspaceID: 'YOUR_WORKSPACE_ID',
+  linkHandler: (link) => {
+    try {
+      const url = new URL(link)
+      if (url.protocol === 'https:' || url.protocol === 'http:') {
+        window.open(url.href, '_blank', 'noopener,noreferrer')
+      }
+    } catch {
+      console.error('Invalid support link')
+    }
+  },
+})
+~~~
 
 </div>
 
 <div dir="rtl" align="right">
 
-### Vue / Nuxt
+<a id="vue"></a>
 
+## ‏استفاده در ⁦Vue / Nuxt⁩
+
+‏نمونه را در ⁦`onMounted`⁩ بسازید و هنگام حذف کامپوننت، آن را پاک کنید. در این مثال، فرم مهمان ابتدا نمایش داده می‌شود و پس از ورود، چت باز می‌شود:
 
 </div>
 
 <div dir="ltr" align="left">
 
-```vue
+~~~vue
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount } from 'vue'
+import { onBeforeUnmount, onMounted, shallowRef } from 'vue'
 import { createSamanDeskWeb } from 'samandesk'
 
-let support: ReturnType<typeof createSamanDeskWeb> | undefined
+const support = shallowRef<ReturnType<typeof createSamanDeskWeb>>()
 
 onMounted(() => {
-  support = createSamanDeskWeb({
+  support.value = createSamanDeskWeb({
     workspaceID: 'YOUR_WORKSPACE_ID',
-    onReady: () => support?.open(),
+    onError: (error) => console.error(error),
   })
+  support.value.open()
 })
 
-onBeforeUnmount(() => support?.destroy())
+onBeforeUnmount(() => support.value?.destroy())
 </script>
-```
+
+<template>
+  <button @click="support?.open()">پشتیبانی</button>
+  <button @click="support?.close()">بستن</button>
+</template>
+~~~
 
 </div>
 
 <div dir="rtl" align="right">
 
+‏همین الگو برای ⁦Nuxt⁩ هم مناسب است؛ ساخت نمونه داخل ⁦`onMounted`⁩ باعث می‌شود دسترسی به صفحه در مرورگر انجام شود.
 
-‏برای دکمهٔ بازکردن مجدد، پس از اولین ⁦<code dir="ltr">onReady</code>⁩ از ⁦<code dir="ltr">support?.open()</code>⁩ استفاده کنید. در ⁦React⁩ وب نیز ساخت نمونه را داخل ⁦<code dir="ltr">useEffect</code>⁩ و ⁦<code dir="ltr">destroy()</code>⁩ را در ⁦cleanup⁩ همان ⁦effect⁩ قرار دهید.
+<a id="react"></a>
 
-### React / Next.js
+## ‏استفاده در ⁦React / Next.js⁩
 
-‏در ⁦Next.js⁩ (هم در ⁦Pages Router⁩ و هم در ⁦App Router⁩ با ⁦`'use client'`⁩) کتابخانه را داخل هوک ⁦`useEffect`⁩ نمونه‌سازی کنید:
+‏نمونه را در ⁦`useEffect`⁩ بسازید، در ⁦`ref`⁩ نگه دارید و در تابع پاکسازی همان ⁦effect⁩ حذف کنید. در ⁦Next.js App Router⁩ این کامپوننت باید ⁦`'use client'`⁩ داشته باشد.
 
 </div>
 
 <div dir="ltr" align="left">
 
-```tsx
+~~~tsx
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { createSamanDeskWeb } from 'samandesk'
 
-type SamanDeskWebInstance = ReturnType<typeof createSamanDeskWeb>
+type Support = ReturnType<typeof createSamanDeskWeb>
 
 export function SupportWidget() {
-  const supportRef = useRef<SamanDeskWebInstance | null>(null)
-  const [isReady, setIsReady] = useState(false)
+  const supportRef = useRef<Support | null>(null)
 
   useEffect(() => {
-    setIsReady(false)
-    const support = createSamanDeskWeb(
-      {
-        workspaceID: 'YOUR_WORKSPACE_ID',
-        language: 'fa',
-        theme: { darkMode: 'light', color: 'blue' },
-        onReady: () => {
-          setIsReady(true)
-        },
-      },
-      {
-        fullScreen: false,
-      }
-    )
+    const support = createSamanDeskWeb({
+      workspaceID: 'YOUR_WORKSPACE_ID',
+      onError: (error) => console.error(error),
+    })
 
     supportRef.current = support
+    support.open()
 
     return () => {
-      // پاکسازی هنگام Unmount
       support.destroy()
       supportRef.current = null
     }
   }, [])
 
   return (
-    <button
-      disabled={!isReady}
-      onClick={() => supportRef.current?.open()}
-      className="btn-support"
-    >
-      {isReady ? 'پشتیبانی آنلاین' : 'در حال راه‌اندازی...'}
-    </button>
+    <div>
+      <button onClick={() => supportRef.current?.open()}>پشتیبانی</button>
+      <button onClick={() => supportRef.current?.close()}>بستن</button>
+    </div>
   )
 }
-```
+~~~
 
 </div>
 
 <div dir="rtl" align="right">
 
----
+‏اگر ورود باید با حساب کاربر انجام شود، ابتدا توکن را دریافت کنید و سپس نمونه را با ⁦`verifiedToken`⁩ بسازید. تغییر کاربر یا توکن نیاز به حذف نمونهٔ قبلی و ساخت نمونهٔ جدید دارد؛ وابستگی‌های ⁦`useEffect`⁩ را متناسب با این تغییرات تنظیم کنید.
 
-<a id="token-login"></a>
+<a id="html"></a>
 
-### ‏ورود با توکن
+## ‏استفاده در صفحهٔ ⁦HTML⁩
 
-
-</div>
-
-<div dir="ltr" align="left">
-
-```js
-const support = createSamanDeskWeb({
-  verifiedToken: 'VERIFIED_TOKEN_FROM_YOUR_SERVICE',
-  onReady: (sessionToken) => {
-    // sessionToken توکن نشست است، نه لزوماً همان verifiedToken ورودی.
-  },
-})
-```
-
-</div>
-
-<div dir="rtl" align="right">
-
-
-‏در این حالت مسیر ⁦<code dir="ltr">/setup-interoperation/{verifiedToken}</code>⁩ در پس‌زمینه بارگذاری می‌شود و توکن نشست با ⁦<code dir="ltr">onReady</code>⁩ و ⁦<code dir="ltr">onTokenChange</code>⁩ تحویل داده می‌شود. توکن خروجی را جایگزین ⁦<code dir="ltr">verifiedToken</code>⁩ نکنید مگر قرارداد سرویس شما صریحاً آن را بپذیرد. پکیج توکن را فقط در حافظه نگه می‌دارد و ⁦API⁩ ذخیره، تمدید یا خروج از حساب ندارد.
-
-### ‏مدیریت خطا و تلاش مجدد
-
-‏برای خطای تنظیمات، محل ساخت را با ⁦<code dir="ltr">try/catch</code>⁩ پوشش دهید. خطاهای غیرهمگام از ⁦<code dir="ltr">onError</code>⁩ می‌آیند. پیام و کد خطا را نمایش دهید و دکمهٔ تلاش مجدد را در اختیار کاربر بگذارید؛ تلاش خودکار نامحدود ممکن است توکن یک‌بارمصرف را دوباره ارسال کند. برای توکن منقضی یا مصرف‌شده، نمونهٔ قبلی را پاک و با توکن تازه نمونهٔ جدید بسازید. هنگام ثبت گزارش، مقدار توکن و آدرس کامل مسیر ورود را ثبت نکنید.
+‏اگر پروژهٔ شما ابزار مدیریت ماژول ندارد، فایل ⁦`dist/saman-desk.js`⁩ را از نسخهٔ نصب‌شدهٔ پکیج در یک مسیر عمومی سایت، مثلاً ⁦`/vendor/saman-desk.js`⁩، قرار دهید. سپس این کد را در انتهای ⁦`body`⁩ بنویسید:
 
 </div>
 
 <div dir="ltr" align="left">
 
-```ts
-import { createSamanDeskWeb, SamanDeskError } from 'samandesk'
+~~~html
+<button id="support-button">پشتیبانی</button>
 
-try {
+<script type="module">
+  import { createSamanDeskWeb } from '/vendor/saman-desk.js'
+
   const support = createSamanDeskWeb({
-    verifiedToken: 'VERIFIED_TOKEN_FROM_YOUR_SERVICE',
-    handshakeTimeoutMs: 30000,
-    onReady: () => support.open(),
-    onError: (error) => {
-      if (error instanceof SamanDeskError) {
-        console.error(error.code, error.message)
-      }
-      // Enable a user-operated retry button; do not loop automatically.
-    },
+    workspaceID: 'YOUR_WORKSPACE_ID',
+    onError: (error) => console.error(error),
   })
-  // Retry button: support.retry()
-  // Unmount/logout: support.destroy()
-} catch (error) {
-  // Invalid configuration or client DOM not available.
-  console.error(error)
-}
-```
+
+  support.open()
+
+  document.getElementById('support-button').addEventListener('click', () => {
+    support.open()
+  })
+</script>
+~~~
 
 </div>
 
 <div dir="rtl" align="right">
 
-‏مهلت راه‌اندازی فقط در خود کتابخانه اعمال می‌شود و بارگذاری وب‌اپ را هم پوشش می‌دهد؛ مهلت درخواست‌های شبکه و رفتار ذخیره‌سازیِ وب‌اپ فعلی تغییر نکرده‌اند. پایان این مهلت، نتیجهٔ قطعیِ درخواست ورود را مشخص نمی‌کند؛ ممکن است سرور توکن یک‌بارمصرف را مصرف کرده باشد.
+‏در صورت استفاده از ⁦CDN⁩، همین فایل را با شمارهٔ نسخهٔ مشخص بارگذاری کنید تا با انتشار نسخه‌های بعدی، رفتار برنامهٔ شما ناخواسته تغییر نکند.
 
-### ‏پورتال، ذخیره‌سازی محدود و وب‌اپ فعلی
-
-‏وب‌اپ فعلی پیام را به بالاترین پنجره می‌فرستد. کتابخانه در صفحهٔ میزبان و، در صورت دسترسی هم‌دامنه، در بالاترین پنجره شنونده ثبت می‌کند؛ هر دو مسیر فقط پیام پنجرهٔ همان نمونه و دامنهٔ تنظیم‌شده را می‌پذیرند. این کار نیاز به تغییر گیرنده در وب‌اپ را برطرف می‌کند. اگر بالاترین پنجره از دامنه‌ای دیگر باشد، مرورگر اجازهٔ ثبت شنونده در آن را نمی‌دهد؛ در حالت خودکار، فراخوانی ⁦<code dir="ltr">open()</code>⁩ از کلیک کاربر به پنجرهٔ مستقل می‌رود.
-
-‏اگر قاب به‌دلیل محدودیت ذخیره‌سازی یا سیاست تعبیه آماده نشود، دکمه‌ای برای ⁦<code dir="ltr">openPopup()</code>⁩ ارائه کنید. در این مسیر، ورود و چت هر دو در همان پنجره می‌مانند و توکن را بین ذخیره‌سازیِ قاب و پنجره جابه‌جا نمی‌کنیم. پنجرهٔ مستقل از ⁦<code dir="ltr">window.opener</code>⁩ موجود در وب‌اپ فعلی استفاده می‌کند. برای جلوگیری از مسدودشدن پنجره، ساخت آن قبل از هر عملیات غیرهمگام و مستقیماً در پاسخ به کلیک انجام می‌شود.
-
-</div>
-
-<div dir="ltr" align="left">
-
-```js
-const support = SamanDesk.createSamanDeskWeb({
-  verifiedToken: 'FRESH_VERIFIED_TOKEN_FROM_YOUR_SERVICE',
-  onError: (error) => {
-    console.error(error.code, error.message)
-    // Keep the standalone-window button available even before onReady.
-  },
-}, { mode: 'popup' })
-
-document.getElementById('support-button').addEventListener('click', () => {
-  support.openPopup()
-})
-```
-
-</div>
-
-<div dir="rtl" align="right">
-
-‏این مثال برای خروجی ⁦UMD⁩ است و دکمه نباید تا دریافت توکن غیرفعال بماند؛ شروع ورود به همان کلیک نیاز دارد. فایل ساخته‌شده را پیش از این کد با برچسب ⁦<code dir="ltr">script</code>⁩ بارگذاری کنید. در حالت پنجرهٔ مستقل، پس از دریافت توکن صفحهٔ دپارتمان‌ها خودکار باز می‌شود. اگر ورود قبلی توکن را مصرف کرده باشد، از سرویس میزبان توکن تازه بگیرید و نمونهٔ تازه بسازید. کتابخانه توکن نشست را جایگزین توکن تأیید نمی‌کند. الزام کلیک کاربر و احتمال مسدودشدن پنجره در [مستندات مرورگر](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) توضیح داده شده است.
-
-‏محدودیت‌های باقی‌مانده: کتابخانه نمی‌تواند از بیرون قاب ذخیره‌سازی وب‌اپ را اصلاح کند، پاسخ ورود را بخواند یا فهرست دامنه‌های مجاز وب‌اپ را تغییر دهد. در دامنه‌های خارج از فهرست قدیمی، تم و زبان ممکن است با پیش‌فرض وب‌اپ نمایش داده شوند؛ در قاب تودرتو نیز وب‌اپ قدیمی ممکن است پاسخ پیکربندیِ والد مستقیم را نپذیرد. پنجرهٔ مستقل نیازمند مجازبودن پنجره‌ها، ذخیره‌سازی معمول وب‌اپ و حفظ ارتباط با بازکننده است. محدودیت ⁦sandbox⁩ یا سیاست ⁦COOP⁩ می‌تواند این مسیر را نیز ببندد. شکست داخلی وب‌اپ یا رد توکن همچنان باید در همان سرویس رفع شود.
-
+‏اگر از خروجی ⁦`dist/saman-desk.umd.cjs`⁩ در تگ معمولی ⁦`script`⁩ استفاده می‌کنید، توابع زیر نام سراسری ⁦`SamanDesk`⁩ قرار می‌گیرند؛ برای نمونه، ⁦`SamanDesk.createSamanDeskWeb(...)`⁩.
 
 <a id="react-native"></a>
 
-## ‏رابط ⁦React Native⁩
+## ‏استفاده در ⁦React Native⁩
 
+‏در ⁦React Native⁩، نمایش و نگهداری ⁦WebView⁩ با برنامهٔ شماست. تابع ⁦`createSamanDeskReactNative`⁩ وضعیت موردنیاز آن را می‌دهد و متدهای بازکردن، بستن و تلاش دوباره را در اختیارتان می‌گذارد.
 
-</div>
+‏پس از [نصب و راه‌اندازی ⁦react-native-webview⁩](https://github.com/react-native-webview/react-native-webview/blob/master/docs/Getting-Started.md)، دو گزینهٔ زیر را در آرگومان دوم بدهید:
 
-<div dir="ltr" align="left">
+| ‏گزینه | ‏کاربرد |
+| --- | --- |
+| ‏⁦`onStateChange(state)`⁩ | ‏دریافت وضعیت جدید نمایش و آدرس. هنگام ساخت نمونه اجرا نمی‌شود؛ وضعیت اولیه را با ⁦`getState()`⁩ بخوانید. |
+| ‏⁦`injectJavaScript(script)`⁩ | ‏کد دریافت‌شده را با متد هم‌نام روی ⁦WebView⁩ اجرا کنید. |
 
-```text
-createSamanDeskReactNative(config, options)
-```
-
-</div>
-
-<div dir="rtl" align="right">
-
-
-‏هر دو گزینهٔ آرگومان دوم الزامی‌اند:
-
-| ‏گزینه | ‏امضا | ‏کاربرد |
-| ---: | ---: | ---: |
-| ‏⁦<code dir="ltr">onStateChange</code>⁩ | ‏⁦<code dir="ltr">(state: { source: { uri: string }; visible: boolean }) =&gt; void</code>⁩ | ‏دریافت وضعیت جدید بعد از ⁦<code dir="ltr">open()</code>⁩ یا ⁦<code dir="ltr">close()</code>⁩؛ هنگام ساخت اجرا نمی‌شود |
-| ‏⁦<code dir="ltr">injectJavaScript</code>⁩ | ‏⁦<code dir="ltr">(script: string) =&gt; void</code>⁩ | ‏اجرای کد ارسالی کتابخانه داخل ⁦WebView⁩ |
-
-| ‏متد خروجی | ‏رفتار |
-| ---: | ---: |
-| ‏⁦<code dir="ltr">getState()</code>⁩ | ‏وضعیت فعلی؛ برای وضعیت اولیه بلافاصله بعد از ساخت استفاده کنید |
-| ‏⁦<code dir="ltr">getWebViewProps()</code>⁩ | ‏اتصال ⁦<code dir="ltr">onMessage</code>⁩، ⁦<code dir="ltr">onError</code>⁩، ⁦<code dir="ltr">onHttpError</code>⁩ و ⁦<code dir="ltr">key</code>⁩؛ کلید برای ایجاد نمای تازه هنگام تلاش مجدد است. آدرس را جداگانه از وضعیت بدهید |
-| ‏⁦<code dir="ltr">open(link?: string)</code>⁩ | ‏تنظیم ⁦<code dir="ltr">visible: true</code>⁩ و بارگذاری لینک یا مسیر دپارتمان‌ها با توکن نشست |
-| ‏⁦<code dir="ltr">close()</code>⁩ | ‏مخفی‌کردن بدون تخلیهٔ صفحه و لغو درخواست بازکردن معلق |
-| ‏⁦<code dir="ltr">retry()</code>⁩ | ‏شروع دوبارهٔ ورود و تغییر کلید ⁦WebView⁩؛ برای توکن منقضی‌شده نمونهٔ جدید با توکن تازه بسازید |
-| ‏⁦<code dir="ltr">destroy()</code>⁩ | ‏لغو تایمرها و انتقال به صفحهٔ خالی؛ پیام‌های بعدی نادیده گرفته می‌شوند. حذف ⁦WebView⁩ بر عهدهٔ میزبان است |
-
-‏وضعیت اولیه با توکن، مخفی و روی مسیر ⁦setup⁩ است؛ بدون توکن، نمایان و روی مسیر ورود مهمان. برخلاف وب، ایجاد نمونهٔ مهمان در ⁦React Native⁩ باعث اجرای ⁦<code dir="ltr">onOpen</code>⁩ نمی‌شود.
-
-### ‏نمونهٔ اتصال ⁦WebView⁩
-
-‏پس از نصب و راه‌اندازی ⁦<code dir="ltr">react-native-webview</code>⁩ در پروژه، کامپوننت زیر جریان ورود مهمان را متصل می‌کند. ⁦WebView⁩ هنگام راه‌اندازی مخفی نیز ⁦mount⁩ می‌ماند تا بتواند با کتابخانه ارتباط برقرار کند.
-
+‏نمونهٔ زیر ورود مهمان و بازشدن چت پس از ورود را نشان می‌دهد:
 
 </div>
 
 <div dir="ltr" align="left">
 
-```tsx
+~~~tsx
 import { useEffect, useRef, useState } from 'react'
-import { Button, Linking, View } from 'react-native'
+import { Button, Linking, Text, View } from 'react-native'
 import { WebView } from 'react-native-webview'
 import { createSamanDeskReactNative } from 'samandesk'
 
@@ -512,54 +438,61 @@ type Support = ReturnType<typeof createSamanDeskReactNative>
 type SupportState = ReturnType<Support['getState']>
 
 export function SupportChat() {
-  const webView = useRef<WebView>(null)
-  const support = useRef<Support | null>(null)
+  const webViewRef = useRef<WebView>(null)
+  const supportRef = useRef<Support | null>(null)
   const [state, setState] = useState<SupportState | null>(null)
-  const [ready, setReady] = useState(false)
+  const [errorText, setErrorText] = useState('')
 
   useEffect(() => {
-    const api = createSamanDeskReactNative(
+    setErrorText('')
+
+    const support = createSamanDeskReactNative(
       {
         workspaceID: 'YOUR_WORKSPACE_ID',
-        onReady: () => {
-          setReady(true)
-          support.current?.open()
-        },
+        onReady: () => supportRef.current?.open(),
+        onError: () => setErrorText('اتصال به پشتیبانی برقرار نشد.'),
         linkHandler: (link) => {
           if (/^https?:\/\//i.test(link)) {
-            void Linking.openURL(link).catch(console.error)
+            void Linking.openURL(link).catch(() => {
+              setErrorText('بازکردن لینک ممکن نشد.')
+            })
           }
         },
       },
       {
         onStateChange: setState,
         injectJavaScript: (script) => {
-          webView.current?.injectJavaScript(script + '\ntrue;')
+          webViewRef.current?.injectJavaScript(script)
         },
       },
     )
-    support.current = api
-    setState(api.getState())
+
+    supportRef.current = support
+    setState(support.getState())
 
     return () => {
-      api.destroy()
-      support.current = null
+      support.destroy()
+      supportRef.current = null
     }
   }, [])
 
-  const api = support.current
-  const webViewProps = api?.getWebViewProps()
+  const support = supportRef.current
+  const webViewProps = support?.getWebViewProps()
+
   return (
     <View style={{ flex: 1 }}>
-      <Button title="پشتیبانی" disabled={!ready} onPress={() => api?.open()} />
-      {state && api && webViewProps && (
+      <Button title="پشتیبانی" onPress={() => support?.open()} />
+      <Button title="بستن" onPress={() => support?.close()} />
+      {errorText ? <Text>{errorText}</Text> : null}
+
+      {state && webViewProps && (
         <View
           pointerEvents={state.visible ? 'auto' : 'none'}
           style={state.visible ? { flex: 1 } : { width: 1, height: 1, opacity: 0 }}
         >
           <WebView
             key={webViewProps.key}
-            ref={webView}
+            ref={webViewRef}
             source={state.source}
             javaScriptEnabled
             onMessage={webViewProps.onMessage}
@@ -571,169 +504,189 @@ export function SupportChat() {
     </View>
   )
 }
-```
+~~~
 
 </div>
 
 <div dir="rtl" align="right">
 
+‏در این اتصال، چند نکته را رعایت کنید:
 
-‏پیام بستنِ داخل وب‌اپ از همان مسیر بستن آداپتر عبور می‌کند؛ وضعیت نمایشی و خروجی ⁦<code dir="ltr">getState()</code>⁩ هماهنگ می‌مانند. هنگام مخفی‌بودن، ⁦WebView⁩ را متصل نگه دارید تا ورود قطع نشود. تایمر راه‌اندازی از زمان ساخت نمونه شروع می‌شود؛ نمونه و نمای آن را با هم بسازید.
+- ‏⁦`source`⁩ را از وضعیت کتابخانه بگیرید و همهٔ مقادیر برگشتی ⁦`getWebViewProps()`⁩ را مطابق مثال متصل کنید.
+- ‏وقتی ⁦`visible`⁩ برابر ⁦`false`⁩ است، ⁦WebView⁩ را از صفحه حذف نکنید؛ فقط آن را مخفی کنید تا ورود بتواند ادامه پیدا کند.
+- ‏پس از ⁦`retry()`⁩، ⁦`getWebViewProps()`⁩ را دوباره بخوانید و مقدار تازهٔ ⁦`key`⁩ را اعمال کنید.
+- ‏نمونه و ⁦WebView⁩ را نزدیک به هم ایجاد کنید؛ مهلت راه‌اندازی از زمان ساخت نمونه شروع می‌شود.
+
+‏در ورود مهمان، وضعیت اولیه نمایان است. در ورود با ⁦`verifiedToken`⁩، وضعیت اولیه مخفی است و باید ⁦WebView⁩ همچنان بارگذاری شود. پس از آماده‌شدن نشست، با ⁦`open()`⁩ آن را نمایش دهید؛ در مثال بالا، ⁦`onReady`⁩ این کار را انجام می‌دهد.
+
+| ‏متد | ‏کاربرد |
+| --- | --- |
+| ‏⁦`getState()`⁩ | ‏دریافت ⁦`{ source: { uri }, visible }`⁩؛ برای وضعیت اولیه هم از همین متد استفاده کنید. |
+| ‏⁦`getWebViewProps()`⁩ | ‏دریافت ⁦`key`⁩ و رویدادهای لازم برای اتصال ⁦WebView⁩. |
+| ‏⁦`open(link?)`⁩ | ‏نمایش چت پس از آماده‌شدن نشست؛ درخواست زودهنگام نگه داشته می‌شود. |
+| ‏⁦`close()`⁩ | ‏مخفی‌کردن چت و لغو درخواست بازکردنِ در انتظار؛ صفحهٔ فعلی حفظ می‌شود. |
+| ‏⁦`retry()`⁩ | ‏شروع دوبارهٔ ورود با همان تنظیمات. برای توکن تازه، نمونهٔ تازه بسازید. |
+| ‏⁦`destroy()`⁩ | ‏پایان استفاده از نمونه و مخفی‌کردن آن؛ حذف ⁦WebView⁩ از رابط برنامه با شماست. |
+
+<a id="errors"></a>
+
+## ‏مدیریت خطا و تلاش دوباره
+
+‏دو نوع خطا را جداگانه مدیریت کنید: خطاهایی مثل شناسهٔ خالی یا آدرس نامعتبر، همان لحظهٔ فراخوانی رخ می‌دهند و با ⁦`try/catch`⁩ گرفته می‌شوند. خطاهای ورود و بارگذاری از طریق ⁦`onError`⁩ اعلام می‌شوند. اگر ⁦`onError`⁩ تعریف نکنید، کتابخانه خطا را در کنسول ثبت می‌کند.
+
+</div>
+
+<div dir="ltr" align="left">
+
+~~~ts
+import { createSamanDeskWeb, SamanDeskError } from 'samandesk'
+
+let support: ReturnType<typeof createSamanDeskWeb> | undefined
+
+try {
+  support = createSamanDeskWeb({
+    workspaceID: 'YOUR_WORKSPACE_ID',
+    onError: (error) => {
+      if (error instanceof SamanDeskError) {
+        console.error(error.code, error.message)
+      }
+    },
+  })
+  support.open()
+} catch (error) {
+  console.error('Could not create the support widget:', error)
+}
+~~~
+
+</div>
+
+<div dir="rtl" align="right">
+
+‏برای نمایش پیام مناسب به کاربر، از ⁦`error.code`⁩ استفاده کنید:
+
+| ‏کد | ‏معنی و اقدام پیشنهادی |
+| --- | --- |
+| ‏⁦`INVALID_CONFIG`⁩ | ‏تنظیمات معتبر نیست یا نمونهٔ وب پیش از آماده‌شدن صفحه ساخته شده است. ورودی‌ها و محل ساخت نمونه را اصلاح کنید. |
+| ‏⁦`INVALID_LINK`⁩ | ‏لینک به مبدأ سامان دسکِ تنظیم‌شده تعلق ندارد یا معتبر نیست. لینک بیرونی را از طریق ⁦`linkHandler`⁩ مدیریت کنید. |
+| ‏⁦`HANDSHAKE_TIMEOUT`⁩ | ‏راه‌اندازی در مهلت تعیین‌شده کامل نشده است. اتصال شبکه، توکن و امکان نمایش چت داخل صفحه را بررسی کنید. |
+| ‏⁦`AUTHENTICATION_FAILED`⁩ | ‏سامان دسک خطای ورود اعلام کرده است. اعتبار توکن را بررسی و در صورت نیاز توکن تازه دریافت کنید. |
+| ‏⁦`INVALID_MESSAGE`⁩ | ‏توکن نشست معتبر دریافت نشده است؛ ممکن است اتصال به نسخهٔ وب‌اپ نیاز به بررسی داشته باشد. |
+| ‏⁦`LOAD_FAILED`⁩ | ‏بارگذاری یا ادامهٔ اتصال ممکن نشده است. در وب، گزینهٔ پنجرهٔ جدا را هم در اختیار کاربر بگذارید. |
+| ‏⁦`POPUP_REQUIRED`⁩ | ‏برای شروع، به پنجرهٔ جدا و کلیک کاربر نیاز است. دکمهٔ بازکردن پنجره را فعال نگه دارید. |
+| ‏⁦`POPUP_BLOCKED`⁩ | ‏مرورگر اجازهٔ بازکردن پنجره را نداده است. آن را مستقیماً در پاسخ به کلیک باز کنید. |
+| ‏⁦`CALLBACK_ERROR`⁩ | ‏یکی از توابعی که به کتابخانه داده‌اید خطا داده است. تابع مشخص‌شده در پیام را اصلاح کنید. |
+| ‏⁦`DESTROYED`⁩ | ‏نمونه قبلاً حذف شده است. برای ادامه نمونهٔ جدید بسازید. |
+
+‏⁦`INVALID_LINK`⁩ و ⁦`DESTROYED`⁩ نیز ممکن است هنگام فراخوانی متدها رخ دهند؛ در صورت نیاز، همان فراخوانی را با ⁦`try/catch`⁩ پوشش دهید.
+
+‏برای تلاش دوباره، ⁦`retry()`⁩ را به دکمهٔ کاربر متصل کنید. این متد تنظیمات اولیه، از جمله همان ⁦`verifiedToken`⁩ را دوباره استفاده می‌کند. حلقهٔ تلاش خودکار نسازید؛ پایان مهلت لزوماً به معنی مصرف‌نشدن توکن در سرور نیست. اگر اعتبار توکن معلوم نیست، از سرویس خود توکن تازه بگیرید و نمونهٔ جدید بسازید.
+
+‏پس از ⁦`retry()`⁩، اگر می‌خواهید چت به محض ورود باز شود، دوباره ⁦`open()`⁩ را فراخوانی کنید یا این کار را در ⁦`onReady`⁩ انجام دهید.
+
+<a id="popup"></a>
+
+## ‏بازکردن چت در پنجرهٔ جدا
+
+‏در بعضی سایت‌ها، به‌خصوص وقتی صفحهٔ شما داخل یک پورتال نمایش داده می‌شود، چت نمی‌تواند داخل همان صفحه راه‌اندازی شود. محدودیت‌های مرورگر برای ذخیره‌سازی یا نمایش صفحات خارجی هم ممکن است مانع شوند. در این شرایط، ⁦`openPopup()`⁩ را به یک دکمه متصل کنید.
+
+‏اگر از ابتدا می‌خواهید ورود و چت در پنجرهٔ جدا انجام شود، ⁦`mode: 'popup'`⁩ را در آرگومان دوم بدهید:
+
+</div>
+
+<div dir="ltr" align="left">
+
+~~~js
+import { createSamanDeskWeb, SamanDeskError } from 'samandesk'
+
+const support = createSamanDeskWeb(
+  {
+    workspaceID: 'YOUR_WORKSPACE_ID',
+    onError: (error) => {
+      if (error instanceof SamanDeskError && error.code === 'POPUP_REQUIRED') {
+        return
+      }
+      console.error(error)
+    },
+  },
+  { mode: 'popup' },
+)
+
+document.getElementById('support-button').addEventListener('click', () => {
+  support.openPopup()
+})
+~~~
+
+</div>
+
+<div dir="rtl" align="right">
+
+‏این مثال به دکمه‌ای با شناسهٔ ⁦`support-button`⁩ در صفحه نیاز دارد. در حالت ⁦`popup`⁩، ساخت نمونه پنجره‌ای باز نمی‌کند؛ ⁦`POPUP_REQUIRED`⁩ اعلام می‌شود تا برنامه از کاربر بخواهد روی دکمه کلیک کند. پس از کلیک، ورود شروع می‌شود و بعد از دریافت توکن، صفحهٔ انتخاب دپارتمان در همان پنجره باز می‌شود.
+
+‏دکمهٔ بازکردن پنجره را تا رسیدن ⁦`onReady`⁩ غیرفعال نکنید، چون شروع ورود به همان کلیک نیاز دارد. ⁦`openPopup()`⁩ را پیش از هر ⁦`await`⁩ در رویداد کلیک صدا بزنید.
+
+| ‏حالت | ‏رفتار |
+| --- | --- |
+| ‏⁦`auto`⁩ | ‏در حالت معمول، چت داخل صفحه باز می‌شود. اگر کتابخانه تشخیص دهد اتصال در صفحه به پنجرهٔ جدا نیاز دارد، ⁦`open()`⁩ از همان مسیر استفاده می‌کند و باید با کلیک اجرا شود. |
+| ‏⁦`iframe`⁩ | ‏چت را داخل صفحه راه‌اندازی می‌کند؛ اگر این مسیر ممکن نباشد، خطا اعلام می‌شود. |
+| ‏⁦`popup`⁩ | ‏از ابتدا منتظر کلیک کاربر برای شروع ورود در پنجرهٔ جدا می‌ماند. |
+
+‏حالت ⁦`auto`⁩ همهٔ محدودیت‌های مرورگر را خودکار تشخیص نمی‌دهد. حتی در این حالت، برای خطاهای راه‌اندازی می‌توانید دکمهٔ ⁦`openPopup()`⁩ ارائه کنید. اگر ورود قبلی توکن یک‌بارمصرف را مصرف کرده باشد، برای ادامه توکن و نمونهٔ تازه لازم است.
+
+‏پنجرهٔ جدا هم باید در مرورگر و پورتال مجاز باشد. اگر سرور اجازهٔ نمایش رابط یا ادامهٔ اتصال را ندهد، تغییر حالت نمایش به‌تنهایی مشکل را برطرف نمی‌کند. همچنین اعمال زبان و تم به پشتیبانی و تنظیمات وب‌اپ سامان دسک وابسته است.
 
 <a id="types"></a>
 
-## ‏خروجی‌های ⁦TypeScript⁩ و ماژول‌ها
+## ‏نوع‌های ⁦TypeScript⁩
 
-‏پکیج ورودی ⁦ESM⁩ و ⁦CommonJS⁩ و ⁦declaration⁩های ⁦TypeScript⁩ را در ⁦<code dir="ltr">package.json</code>⁩ معرفی می‌کند:
-
+‏نوع‌های عمومی همراه پکیج ارائه می‌شوند. برای تنظیمات مشترک از ⁦`SamanDeskConfig`⁩، برای تم از ⁦`ProjectTheme`⁩ و برای کد خطا از ⁦`SamanDeskErrorCode`⁩ استفاده کنید. ⁦`SamanDeskError`⁩ نیز کلاس خطاست و برای ⁦`instanceof`⁩ کاربرد دارد.
 
 </div>
 
 <div dir="ltr" align="left">
 
-```js
+~~~ts
+import type { ProjectTheme, SamanDeskConfig } from 'samandesk'
 import { createSamanDeskWeb, createSamanDeskReactNative } from 'samandesk'
-// CommonJS:
-// const { createSamanDeskWeb } = require('samandesk')
-```
 
-</div>
-
-<div dir="rtl" align="right">
-
-
-‏نوع‌های عمومی شامل ⁦<code dir="ltr">SamanDeskConfig</code>⁩، ⁦<code dir="ltr">ProjectTheme</code>⁩، ⁦<code dir="ltr">SamanDeskErrorCode</code>⁩، ⁦<code dir="ltr">MessageData&lt;T = {}&gt;</code>⁩ و ⁦<code dir="ltr">OutgoingMessage</code>⁩ هستند. کلاس ⁦<code dir="ltr">SamanDeskError</code>⁩ نیز صادر می‌شود. دو نوع آخر ساختار پیام ارتباطی‌اند:
-
-
-</div>
-
-<div dir="ltr" align="left">
-
-```ts
-// MessageData<T>: { id: number; action: string; data: T }
-// OutgoingMessage: { from: 'SamanDesk'; action: string; data?: any; id?: number }
-```
-
-</div>
-
-<div dir="rtl" align="right">
-
-
-‏⁦<code dir="ltr">Color</code>⁩، ⁦<code dir="ltr">WebOptions</code>⁩، ⁦<code dir="ltr">ReactNativeOptions</code>⁩، ⁦<code dir="ltr">ReactNativeState</code>⁩ و کلاس ⁦<code dir="ltr">SamanDeskCore</code>⁩ مستقیماً از ورودی عمومی ⁦export⁩ نمی‌شوند. برای استخراج نوع‌ها از امضای توابع استفاده کنید:
-
-
-</div>
-
-<div dir="ltr" align="left">
-
-```ts
-import type { ProjectTheme } from 'samandesk'
-import { createSamanDeskWeb, createSamanDeskReactNative } from 'samandesk'
+const config: SamanDeskConfig = {
+  workspaceID: 'YOUR_WORKSPACE_ID',
+  theme: { darkMode: 'dark', color: 'teal' },
+}
 
 type ThemeColor = ProjectTheme['color']
 type WebOptions = NonNullable<Parameters<typeof createSamanDeskWeb>[1]>
 type NativeOptions = Parameters<typeof createSamanDeskReactNative>[1]
-```
+type WebSupport = ReturnType<typeof createSamanDeskWeb>
+type NativeSupport = ReturnType<typeof createSamanDeskReactNative>
+~~~
 
 </div>
 
 <div dir="rtl" align="right">
 
-
-<a id="protocol"></a>
-
-## ‏پروتکل تبادل پیام
-
-‏در وب، ارتباط میزبان و ⁦<code dir="ltr">iframe</code>⁩ با ⁦<code dir="ltr">postMessage</code>⁩ انجام می‌شود. در ⁦React Native⁩، وب‌اپ پیام ⁦JSON⁩ را با ⁦<code dir="ltr">window.ReactNativeWebView.postMessage</code>⁩ می‌فرستد و آداپتر پاسخ را با ⁦<code dir="ltr">injectJavaScript</code>⁩ به ⁦WebView⁩ می‌رساند. اتصال این دو مسیر در نمونهٔ بالا آمده است.
-
-| ‏پیام | ‏کاربرد |
-| ---: | ---: |
-| ‏⁦<code dir="ltr">getConfig</code>⁩ | ‏درخواست تم، رنگ و زبان؛ پاسخ با همان شناسهٔ پیام ارسال می‌شود |
-| ‏⁦<code dir="ltr">setToken</code>⁩ | ‏دریافت توکن نشست و اجرای ⁦<code dir="ltr">onReady</code>⁩ و سپس ⁦<code dir="ltr">onTokenChange</code>⁩ |
-| ‏⁦<code dir="ltr">setGuestReadyEvent</code>⁩ | ‏آماده‌شدن فرم مهمان و اجرای ⁦<code dir="ltr">onGuestReady</code>⁩؛ هنوز توکن نشست دریافت نشده است |
-| ‏⁦<code dir="ltr">openLink</code>⁩ | ‏تحویل لینک به ⁦<code dir="ltr">linkHandler</code>⁩ |
-| ‏⁦<code dir="ltr">close</code>⁩ | ‏بستن از مسیر آداپتر و هماهنگ‌کردن وضعیت میزبان |
-| ‏⁦<code dir="ltr">error</code>⁩ | ‏اعلام شکست ورود به میزبان و اجرای ⁦<code dir="ltr">onError</code>⁩ |
-
-‏این پیام‌ها قرارداد ارتباط داخلی‌اند؛ متد عمومی برای ارسال دلخواه پیام یا فراخوانی هسته از خروجی پکیج ارائه نمی‌شود.
-
-<a id="troubleshooting"></a>
-
-## ‏محدودیت‌ها و رفع مشکل
-
-| ‏نشانه | ‏علت / اقدام |
-| ---: | ---: |
-| ‏خطای ⁦<code dir="ltr">INVALID_CONFIG</code>⁩ | ‏ساخت را سمت کلاینت و بعد از آماده‌شدن بدنه انجام دهید؛ شناسه یا توکن و آدرس وب‌اپ را بررسی کنید. این خطا همگام است و باید در محل ساخت گرفته شود |
-| ‏خطای ⁦<code dir="ltr">HANDSHAKE_TIMEOUT</code>⁩ | ‏به‌موقع توکن یا آماده‌شدن فرم دریافت نشده است؛ شبکه، محدودیت قاب، دامنهٔ نهایی وب‌اپ و اتصال پیام‌ها را بررسی کنید. تایمر اضافی بر اساس رویداد خام نسازید |
-| ‏خطای ⁦<code dir="ltr">AUTHENTICATION_FAILED</code>⁩ | ‏وب‌اپ ورود را رد کرده است؛ متن خطا را بررسی و در صورت انقضا توکن تازه بگیرید. پاسخ ۲۰۰ بدون توکن معتبر نیز ورود موفق نیست |
-| ‏خطای ⁦<code dir="ltr">CALLBACK_ERROR</code>⁩ | ‏یکی از توابع میزبان استثنا داده است؛ نام تابع در پیام خطا آمده است. پیاده‌سازی همان تابع را اصلاح کنید |
-| ‏خطای ⁦<code dir="ltr">POPUP_REQUIRED</code>⁩ | ‏راه‌اندازی به پنجرهٔ مستقل نیاز دارد؛ دکمهٔ فعال برای ⁦<code dir="ltr">openPopup()</code>⁩ ارائه کنید و آن را به دریافت توکن وابسته نکنید |
-| ‏خطای ⁦<code dir="ltr">POPUP_BLOCKED</code>⁩ | ‏پنجره را مستقیماً از کلیک کاربر باز کنید؛ مجوز پنجره‌ها و محدودیت قابِ پورتال را بررسی کنید |
-| ‏تم یا زبان اعمال نمی‌شود | ‏وب‌اپ فعلی پاسخ پیکربندی را فقط از چند دامنهٔ ثابت و پنجرهٔ موردانتظار می‌پذیرد. کتابخانه این محدودیت را دور نمی‌زند و رابط می‌تواند با تنظیمات پیش‌فرض کار کند |
-| ‏خطای بارگذاری در وب یا ⁦WebView⁩ | ‏اتصال ⁦<code dir="ltr">onError</code>⁩ و پراپ‌های نمای بومی را برقرار کنید. مرورگر همیشه شکست بارگذاری قاب را با رویداد خطا اعلام نمی‌کند؛ مهلت راه‌اندازی مسیر جایگزین تشخیص است |
-| ‏ذخیره‌سازی مرورگر در قاب مسدود است | ‏از کلیک کاربر ⁦<code dir="ltr">openPopup()</code>⁩ را اجرا کنید؛ ورود و چت در پنجرهٔ مستقل ادامه می‌یابد. اگر توکن قبلی مصرف شده، نمونهٔ تازه با توکن تازه لازم است |
-
-‏پیام‌های وب با پنجرهٔ مبدأ و ⁦origin⁩ تطبیق داده می‌شوند؛ وجود چند نمونه روی یک صفحه باعث جابه‌جایی پیام‌ها نمی‌شود. دریافت از بالاترین پنجرهٔ قابل‌دسترسی برای سازگاری با وب‌اپ فعلی پشتیبانی می‌شود و همهٔ شنونده‌ها و پنجرهٔ مستقل هنگام پاکسازی حذف می‌شوند. ⁦API⁩ عمومی برای ارسال پیام چت، مدیریت مکالمه، دریافت تعداد پیام خوانده‌نشده، تنظیم مجدد توکن یا دسترسی به قاب وجود ندارد.
+‏نوع‌های تنظیمات اختصاصی وب و موبایل با نام جداگانه از پکیج صادر نمی‌شوند؛ مانند مثال بالا، آن‌ها را از امضای توابع استخراج کنید.
 
 <a id="migration"></a>
 
-## ‏راهنمای مهاجرت از نسخهٔ ۱
+## ‏مهاجرت از نسخهٔ ۱
 
-‏مقصد این راهنما نسخهٔ ⁦<code dir="ltr">2.0.0-beta2.0</code>⁩ است که هنوز بتا است. نمونهٔ «قبل» بر اساس ⁦API⁩ نسخهٔ ⁦<code dir="ltr">1.2.0</code>⁩ نوشته شده؛ در نسخهٔ ⁦<code dir="ltr">1.1.1</code>⁩ امضاها ⁦<code dir="ltr">init(verifiedToken)</code>⁩ و ⁦<code dir="ltr">open(config)</code>⁩ بودند. در آن پروژه‌ها نیز تنظیمات ورود و تم را به آرگومان اول سازندهٔ جدید و تنظیمات نمایش را به آرگومان دوم منتقل کنید.
+‏در نسخهٔ ۱٫۲، راه‌اندازی با ساخت ⁦`SamanDesk`⁩ و فراخوانی ⁦`init(config, verifiedToken?)`⁩ انجام می‌شد. در نسخهٔ فعلی، تابع ⁦`createSamanDeskWeb`⁩ نمونهٔ قابل‌استفاده را برمی‌گرداند و نیازی به ⁦`init()`⁩ نیست.
 
-### ‏تغییرات لازم
+| ‏کد قبلی | ‏تغییر لازم |
+| --- | --- |
+| ‏⁦`new SamanDesk()`⁩ و سپس ⁦`init(...)`⁩ | ‏استفاده از ⁦`createSamanDeskWeb(config, options?)`⁩. |
+| ‏توکن در آرگومان دوم ⁦`init`⁩ | ‏قرار دادن توکن در ⁦`config.verifiedToken`⁩. |
+| ‏⁦`fullScreen`⁩ و ⁦`style`⁩ در تنظیمات ورود | ‏انتقال این گزینه‌ها به آرگومان دوم تابع جدید. |
+| ‏نوع ⁦`OpenConfig`⁩ | ‏استفاده از ⁦`SamanDeskConfig`⁩ برای تنظیمات مشترک و استخراج نوع آرگومان دوم برای تنظیمات نمایش. |
+| ‏رویدادهای ⁦`ready`⁩، ⁦`guest-ready`⁩، ⁦`open`⁩ و ⁦`close`⁩ روی ⁦`window`⁩ | ‏استفاده از ⁦`onReady`⁩، ⁦`onGuestReady`⁩، ⁦`onOpen`⁩ و ⁦`onClose`⁩ در تنظیمات. |
 
-| ‏نسخهٔ ۱ | ‏بتای ۲ |
-| ---: | ---: |
-| ‏نوع ⁦<code dir="ltr">OpenConfig</code>⁩ | ‏نوع ⁦<code dir="ltr">SamanDeskConfig</code>⁩ برای تنظیمات مشترک؛ نوع تنظیمات وب را از آرگومان دوم استخراج کنید |
-| ‏بازکردن لینک بدون تنظیم ⁦handler⁩ | ‏تعریف صریح ⁦<code dir="ltr">linkHandler</code>⁩؛ در نبود آن فقط هشدار ثبت می‌شود |
-| ‏⁦<code dir="ltr">new SamanDesk()</code>⁩ و سپس ⁦<code dir="ltr">init(config, token?)</code>⁩ | ‏⁦<code dir="ltr">createSamanDeskWeb(config, options?)</code>⁩؛ بدون متد ⁦<code dir="ltr">init</code>⁩ |
-| ‏توکن در آرگومان دوم ⁦<code dir="ltr">init</code>⁩ | ‏توکن در ⁦<code dir="ltr">config.verifiedToken</code>⁩ |
-| ‏تنظیم اندازه و تمام‌صفحه در ⁦config⁩ ورود | ‏گزینه‌های نمایش وب در آرگومان دوم سازنده |
-| ‏رویدادهای ⁦<code dir="ltr">window</code>⁩ شامل ⁦<code dir="ltr">ready</code>⁩، ⁦<code dir="ltr">guest-ready</code>⁩، ⁦<code dir="ltr">open</code>⁩ و ⁦<code dir="ltr">close</code>⁩ | ‏به‌ترتیب ⁦callback⁩های ⁦<code dir="ltr">onReady</code>⁩، ⁦<code dir="ltr">onGuestReady</code>⁩، ⁦<code dir="ltr">onOpen</code>⁩ و ⁦<code dir="ltr">onClose</code>⁩ |
-| ‏توکن نشست از ⁦API⁩ عمومی در دسترس نیست | ‏توکن نشست به ⁦<code dir="ltr">onReady</code>⁩ و ⁦<code dir="ltr">onTokenChange</code>⁩ تحویل داده می‌شود |
-| ‏کلاس و داده‌های مشترک؛ بدون ⁦<code dir="ltr">destroy</code>⁩ | ‏خروجی سازنده دارای ⁦<code dir="ltr">destroy()</code>⁩ و وضعیت مستقل |
-| ‏فقط ⁦iframe⁩ مرورگر | ‏آداپتر وب و آداپتر ⁦headless⁩ برای ⁦React Native⁩ |
-
-### ‏قبل — نسخهٔ ۱٫۲٫۰
+‏نمونهٔ جایگزین برای ورود با توکن و نمایش تمام‌صفحه:
 
 </div>
 
 <div dir="ltr" align="left">
 
-```ts
-import { SamanDesk } from 'samandesk'
-
-const support = new SamanDesk()
-function handleReady() {
-  support.open()
-}
-window.addEventListener('ready', handleReady)
-
-await support.init(
-  {
-    language: 'fa',
-    theme: { darkMode: 'light', color: 'teal' },
-    fullScreen: true,
-    style: { marginTop: 64, marginBottom: 16 },
-  },
-  'VERIFIED_TOKEN_FROM_YOUR_SERVICE',
-)
-```
-
-</div>
-
-<div dir="rtl" align="right">
-
-### ‏بعد — نسخهٔ فعلی
-
-‏وابستگی را با دستور نصب ابتدای سند به‌روزرسانی و کد بالا را با نمونهٔ زیر جایگزین کنید. ⁦listener⁩ قدیمی ⁦<code dir="ltr">ready</code>⁩ و سایر ⁦listener⁩های متعلق به ادغام قبلی را از کد میزبان حذف کنید؛ نسخهٔ جدید این رویدادها را روی ⁦<code dir="ltr">window</code>⁩ منتشر نمی‌کند.
-
-</div>
-
-<div dir="ltr" align="left">
-
-```ts
+~~~js
 import { createSamanDeskWeb } from 'samandesk'
 
 const support = createSamanDeskWeb(
@@ -741,13 +694,7 @@ const support = createSamanDeskWeb(
     verifiedToken: 'VERIFIED_TOKEN_FROM_YOUR_SERVICE',
     language: 'fa',
     theme: { darkMode: 'light', color: 'teal' },
-    onReady: () => support.open(),
-    linkHandler: (link) => {
-      const url = new URL(link)
-      if (['https:', 'http:'].includes(url.protocol)) {
-        window.open(url.href, '_blank', 'noopener,noreferrer')
-      }
-    },
+    onError: (error) => console.error(error),
   },
   {
     fullScreen: true,
@@ -755,89 +702,22 @@ const support = createSamanDeskWeb(
   },
 )
 
-// Call from the component's unmount hook:
+support.open()
+
+// Call from the component's cleanup function:
 // support.destroy()
-```
+~~~
 
 </div>
 
 <div dir="rtl" align="right">
 
-‏ساخت نمونهٔ جدید همگام است و متد ⁦<code dir="ltr">init()</code>⁩ یا ⁦Promise⁩ راه‌اندازی ندارد؛ برای آماده‌شدن نشست منتظر ⁦<code dir="ltr">onReady</code>⁩ بمانید. برای ورود مهمان، ⁦<code dir="ltr">verifiedToken</code>⁩ را حذف و ⁦<code dir="ltr">workspaceID</code>⁩ را تنظیم کنید. فرم ورود بلافاصله نمایش داده می‌شود؛ پس از دریافت توکن می‌توانید ⁦<code dir="ltr">open()</code>⁩ را صدا بزنید. اجرای ⁦<code dir="ltr">onGuestReady</code>⁩ به معنی ورود موفق نیست.
+‏رویدادهای قدیمی‌ای را که روی ⁦`window`⁩ ثبت کرده بودید، حذف کنید؛ نسخهٔ فعلی آن‌ها را منتشر نمی‌کند. اگر قبلاً به بازشدن لینک‌های داخل چت تکیه داشتید، حالا ⁦`linkHandler`⁩ را صریح تنظیم کنید.
 
-‏در ⁦Vue / Nuxt⁩ ساخت نمونه را به ⁦<code dir="ltr">onMounted</code>⁩ و پاکسازی را به ⁦<code dir="ltr">onBeforeUnmount</code>⁩ منتقل کنید. در ⁦React / Next.js⁩ این کارها در ⁦<code dir="ltr">useEffect</code>⁩ و تابع ⁦cleanup⁩ آن انجام می‌شوند؛ نمونه‌های کامل در بخش وب آمده‌اند. هر نمونه باید هنگام پایان عمرش با ⁦<code dir="ltr">destroy()</code>⁩ پاکسازی شود.
-
-‏پیام بستن داخل رابط، آداپتر را می‌بندد و رویداد بستن فقط هنگام تغییر وضعیت اجرا می‌شود. برای ⁦React Native⁩، وضعیت، کلید و رویدادهای بارگذاری را مطابق نمونهٔ ⁦WebView⁩ متصل کنید؛ آداپتر خودش نمای بومی را ایجاد یا حذف نمی‌کند.
-
-<a id="development"></a>
-
-## ‏توسعه و انتشار کتابخانه
-
-‏این مخزن مستقل، سورس پکیج ⁦<code dir="ltr">samandesk</code>⁩ را نگهداری می‌کند. دستورات زیر را از ریشهٔ همین مخزن اجرا کنید. مدیریت وابستگی‌ها با ⁦Bun 1.4.4⁩ و ساخت با ⁦tsdown⁩ و ⁦TypeScript 7⁩ انجام می‌شود. ابزار ساخت به ⁦Node.js⁩ با نسخهٔ ⁦<code dir="ltr">^22.18.0 || ^24.11.0 || >=26.0.0</code>⁩ نیاز دارد؛ این پیش‌نیاز مربوط به محیط توسعه و انتشار است.
-
-</div>
-
-<div dir="ltr" align="left">
-
-```bash
-bun install --frozen-lockfile
-bun run start
-```
-
-</div>
-
-<div dir="rtl" align="right">
-
-‏دستور ⁦<code dir="ltr">bun run start</code>⁩ پکیج را با ⁦<code dir="ltr">bun link</code>⁩ ثبت و تغییرات سورس را با ⁦tsdown⁩ در ⁦<code dir="ltr">dist/</code>⁩ بازسازی می‌کند. در پروژهٔ مصرف‌کننده اجرا کنید:
-
-</div>
-
-<div dir="ltr" align="left">
-
-```bash
-bun link samandesk
-```
-
-</div>
-
-<div dir="rtl" align="right">
-
-‏فایل ⁦<code dir="ltr">bun.lock</code>⁩ باید همراه تغییرات وابستگی‌ها ثبت شود. خروجی ⁦ESM⁩ در ⁦<code dir="ltr">dist/saman-desk.js</code>⁩، خروجی ⁦UMD⁩ با نام سراسری ⁦<code dir="ltr">SamanDesk</code>⁩ در ⁦<code dir="ltr">dist/saman-desk.umd.cjs</code>⁩ و اعلان‌های ⁦TypeScript⁩ در ⁦<code dir="ltr">dist/saman-desk.d.ts</code>⁩ تولید می‌شوند. پوشهٔ خروجی پیش از ساخت پاکسازی می‌شود.
-
-‏وب‌اپ سامان دسک جداگانه اجرا می‌شود. برای اتصال به نسخهٔ محلی، آدرس وب‌اپ را صریحاً در ⁦<code dir="ltr">siteUrl</code>⁩ تنظیم کنید؛ حالت توسعه آدرس پیش‌فرض سرور عمومی را تغییر نمی‌دهد.
-
-‏پالت رنگ‌ها در ⁦<code dir="ltr">library-colors.ts</code>⁩ بخشی از قرارداد تم با وب‌اپ است؛ تغییر نام یا مقدار رنگ‌ها باید با فایل متناظر وب‌اپ هماهنگ شود.
-
-### ‏مستندات و انتشار
-
-‏این ⁦README⁩ تنها مرجع مصرف‌کنندگان و راهنمای مهاجرت است و همراه بسته منتشر می‌شود. هنگام تغییر رفتار عمومی، نمونه‌ها و راهنمای مهاجرت همین فایل را با کد همان نسخه هماهنگ کنید؛ برای هر نسخه ⁦README⁩ جدا نسازید. شمارهٔ نسخه در دستورهای نصب و نمونه‌های ⁦CDN⁩ را نیز به‌روزرسانی کنید.
-
-‏برای انتشار، نسخه‌ای جدید و استفاده‌نشده در ⁦<code dir="ltr">package.json</code>⁩ قرار دهید و خروجی را از ریشهٔ همین مخزن بسازید:
-
-</div>
-
-<div dir="ltr" align="left">
-
-```bash
-bun run build
-
-# Stable release
-bun publish --tag latest
-
-# Beta release
-bun publish --tag beta
-```
-
-</div>
-
-<div dir="rtl" align="right">
-
-‏دستور ⁦<code dir="ltr">bun publish</code>⁩ پیش از انتشار از طریق ⁦<code dir="ltr">prepublishOnly</code>⁩ خروجی را دوباره می‌سازد؛ نصب وابستگی‌ها ساخت را اجرا نمی‌کند. فقط دستور انتشار متناسب با نسخه را اجرا کنید؛ نسخهٔ بتا باید با تگ ⁦<code dir="ltr">beta</code>⁩ منتشر شود. نسخهٔ فعلی مشخصات پکیج همچنان ⁦<code dir="ltr">2.0.0-beta2.0</code>⁩ است و برای انتشار تغییرات فعلی باید افزایش یابد.
-
-‏این مخزن عمومی است. توکن واقعی، اطلاعات مشتریان و تنظیمات رجیستری خصوصی را در سورس یا نمونه‌ها قرار ندهید. نمونه‌های ورود از مقدارهای جایگزین استفاده می‌کنند. فایل‌های محیطی، تنظیمات محلی رجیستری، کلیدها و خروجی ساخت در ⁦<code dir="ltr">.gitignore</code>⁩ مستثنا شده‌اند؛ فایل‌های قابل انتشار نیز در ⁦<code dir="ltr">package.json</code>⁩ محدود شده‌اند.
+‏برای ورود مهمان، به‌جای ⁦`verifiedToken`⁩ مقدار ⁦`workspaceID`⁩ را بدهید. پس از ارتقا، باز و بسته‌کردن چت را با همان نمونه انجام دهید و در پایان استفاده، آن را با ⁦`destroy()`⁩ حذف کنید.
 
 ## ‏مجوز
 
-‏مقدار ⁦<code dir="ltr">license</code>⁩ در مشخصات پکیج: ⁦<code dir="ltr">MIT</code>⁩.
+‏این پکیج با مجوز ⁦[MIT](LICENSE)⁩ ارائه می‌شود.
 
 </div>
