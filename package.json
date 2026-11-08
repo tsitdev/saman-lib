@@ -1,6 +1,6 @@
 {
   "name": "samandesk",
-  "version": "2.0.0-beta2.0",
+  "version": "2.0.0-rc.1",
   "license": "MIT",
   "type": "module",
   "packageManager": "bun@1.4.4",
@@ -37,7 +37,6 @@
     "build": "vp pack",
     "test": "vp test --project unit",
     "test:package": "bun run build && vp test --project package",
-    "typecheck": "tsc --noEmit && tsc --project tsconfig.tools.json --noEmit",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
     "format": "vp fmt",

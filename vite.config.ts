@@ -36,6 +36,7 @@ export default defineConfig({
     '*': 'vp check --fix',
   },
   pack: {
+    tsconfig: 'tsconfig.lib.json',
     entry: { 'saman-desk': 'src/index.ts' },
     format: {
       esm: {},
