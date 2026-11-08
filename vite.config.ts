@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 
 export default defineConfig({
   lint: {
-    ignorePatterns: ['dist/**', 'coverage/**', '.vite-hooks/_/**'],
+    ignorePatterns: ['dist/**', 'coverage/**', '.vite-hooks/_/**', 'tests/fixtures/**'],
     options: {
       typeAware: true,
       typeCheck: true,
