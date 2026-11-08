@@ -773,36 +773,36 @@ const support = createSamanDeskWeb(
 
 ## ‏توسعه و انتشار کتابخانه
 
-‏این مخزن مستقل، سورس پکیج ⁦<code dir="ltr">samandesk</code>⁩ را نگهداری می‌کند. دستورات زیر را از ریشهٔ همین مخزن اجرا کنید. برای ابزار ساخت فعلی، ⁦Node.js 18+⁩ و ⁦Yarn Classic 1.x⁩ لازم است.
+‏این مخزن مستقل، سورس پکیج ⁦<code dir="ltr">samandesk</code>⁩ را نگهداری می‌کند. دستورات زیر را از ریشهٔ همین مخزن اجرا کنید. مدیریت وابستگی‌ها با ⁦Bun 1.4.2⁩ و ساخت با ⁦tsdown⁩ انجام می‌شود. ابزار ساخت به ⁦Node.js⁩ با نسخهٔ ⁦<code dir="ltr">^22.18.0 || ^24.11.0 || >=26.0.0</code>⁩ نیاز دارد؛ این پیش‌نیاز مربوط به محیط توسعه و انتشار است.
 
 </div>
 
 <div dir="ltr" align="left">
 
 ```bash
-yarn install --frozen-lockfile
-yarn start
+bun install --frozen-lockfile
+bun run start
 ```
 
 </div>
 
 <div dir="rtl" align="right">
 
-‏دستور ⁦<code dir="ltr">yarn start</code>⁩ پکیج را با ⁦Yarn Classic⁩ لینک و تغییرات سورس را در ⁦<code dir="ltr">dist/</code>⁩ بازسازی می‌کند. در پروژهٔ مصرف‌کننده اجرا کنید:
+‏دستور ⁦<code dir="ltr">bun run start</code>⁩ پکیج را با ⁦<code dir="ltr">bun link</code>⁩ ثبت و تغییرات سورس را با ⁦tsdown⁩ در ⁦<code dir="ltr">dist/</code>⁩ بازسازی می‌کند. در پروژهٔ مصرف‌کننده اجرا کنید:
 
 </div>
 
 <div dir="ltr" align="left">
 
 ```bash
-yarn link samandesk
+bun link samandesk
 ```
 
 </div>
 
 <div dir="rtl" align="right">
 
-‏در ⁦Yarn⁩ جدید، در صورت نیاز وابستگی مصرف‌کننده را به شکل ⁦<code dir="ltr">"samandesk": "link:../saman-lib"</code>⁩ تنظیم و مسیر را با محل مخزن تطبیق دهید.
+‏فایل ⁦<code dir="ltr">bun.lock</code>⁩ باید همراه تغییرات وابستگی‌ها ثبت شود. خروجی ⁦ESM⁩ در ⁦<code dir="ltr">dist/saman-desk.js</code>⁩، خروجی ⁦UMD⁩ با نام سراسری ⁦<code dir="ltr">SamanDesk</code>⁩ در ⁦<code dir="ltr">dist/saman-desk.umd.cjs</code>⁩ و اعلان‌های ⁦TypeScript⁩ در ⁦<code dir="ltr">dist/saman-desk.d.ts</code>⁩ تولید می‌شوند. پوشهٔ خروجی پیش از ساخت پاکسازی می‌شود.
 
 ‏وب‌اپ سامان دسک جداگانه اجرا می‌شود. برای اتصال به نسخهٔ محلی، آدرس وب‌اپ را صریحاً در ⁦<code dir="ltr">siteUrl</code>⁩ تنظیم کنید؛ حالت توسعه آدرس پیش‌فرض سرور عمومی را تغییر نمی‌دهد.
 
@@ -819,20 +819,20 @@ yarn link samandesk
 <div dir="ltr" align="left">
 
 ```bash
-yarn build
+bun run build
 
 # Stable release
-npm publish --tag latest
+bun publish --tag latest
 
 # Beta release
-npm publish --tag beta
+bun publish --tag beta
 ```
 
 </div>
 
 <div dir="rtl" align="right">
 
-‏فقط دستور انتشار متناسب با نسخه را اجرا کنید؛ نسخهٔ بتا باید با تگ ⁦<code dir="ltr">beta</code>⁩ منتشر شود. نسخهٔ فعلی مشخصات پکیج همچنان ⁦<code dir="ltr">2.0.0-beta2.0</code>⁩ است و برای انتشار تغییرات فعلی باید افزایش یابد.
+‏دستور ⁦<code dir="ltr">bun publish</code>⁩ پیش از انتشار از طریق ⁦<code dir="ltr">prepublishOnly</code>⁩ خروجی را دوباره می‌سازد؛ نصب وابستگی‌ها ساخت را اجرا نمی‌کند. فقط دستور انتشار متناسب با نسخه را اجرا کنید؛ نسخهٔ بتا باید با تگ ⁦<code dir="ltr">beta</code>⁩ منتشر شود. نسخهٔ فعلی مشخصات پکیج همچنان ⁦<code dir="ltr">2.0.0-beta2.0</code>⁩ است و برای انتشار تغییرات فعلی باید افزایش یابد.
 
 ‏این مخزن عمومی است. توکن واقعی، اطلاعات مشتریان و تنظیمات رجیستری خصوصی را در سورس یا نمونه‌ها قرار ندهید. نمونه‌های ورود از مقدارهای جایگزین استفاده می‌کنند. فایل‌های محیطی، تنظیمات محلی رجیستری، کلیدها و خروجی ساخت در ⁦<code dir="ltr">.gitignore</code>⁩ مستثنا شده‌اند؛ فایل‌های قابل انتشار نیز در ⁦<code dir="ltr">package.json</code>⁩ محدود شده‌اند.
 

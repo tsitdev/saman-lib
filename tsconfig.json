@@ -21,7 +21,6 @@
       "baseUrl": ".",
       "types": [
         "node",
-        "vite/client",
       ],
     },
     "include": [
