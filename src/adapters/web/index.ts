@@ -170,7 +170,11 @@ export function createSamanDeskWeb(config: SamanDeskConfig, options: WebOptions 
     pendingLink = undefined
     activeUrl = ''
     core.startHandshake()
-    frame.onerror = () => core.fail('LOAD_FAILED', 'The embedded web app could not load. Check network access and embedding policy, or call openPopup() from a user click.')
+    const initialFrame = frame
+    frame.onerror = () => {
+      if (frame !== initialFrame || usingPopup) return
+      core.fail('LOAD_FAILED', 'The embedded web app could not load. Check network access and embedding policy, or call openPopup() from a user click.')
+    }
     navigate(core.getInitialUrl())
     if (!core.config.verifiedToken) show()
     else applyStyles()
@@ -214,7 +218,7 @@ export function createSamanDeskWeb(config: SamanDeskConfig, options: WebOptions 
       navigate(core.getInitialUrl())
       if (!core.hasFailed) show()
     }
-    if (core.hasFailed) return
+    if (core.hasFailed || core.isDestroyed || !popup || popup.closed) return
     clearInterval(popupPoll)
     popupPoll = setInterval(() => {
       if (popup?.closed) hide()

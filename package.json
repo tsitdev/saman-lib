@@ -22,18 +22,33 @@
   "types": "./dist/saman-desk.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/saman-desk.d.ts",
-      "import": "./dist/saman-desk.js",
-      "require": "./dist/saman-desk.umd.cjs"
+      "import": {
+        "types": "./dist/saman-desk.d.ts",
+        "default": "./dist/saman-desk.js"
+      },
+      "require": {
+        "types": "./dist/saman-desk.d.cts",
+        "default": "./dist/saman-desk.umd.cjs"
+      }
     }
   },
   "scripts": {
-    "start": "bun link && tsdown --watch",
-    "build": "tsdown",
+    "start": "bun link && vp pack --watch",
+    "build": "vp pack",
+    "test": "vp test --project unit",
+    "test:package": "bun run build && vp test --project package",
+    "typecheck": "tsc --noEmit && tsc --project tsconfig.tools.json --noEmit",
     "prepublishOnly": "bun run build"
   },
   "devDependencies": {
-    "tsdown": "^0.23.7",
-    "typescript": "^7.0.2"
+    "@types/node": "^26.6.6",
+    "happy-dom": "^21.0.4",
+    "typescript": "^7.0.2",
+    "typescript-compat": "npm:typescript@4.9.5",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.0",
+    "vite-plus": "1.5.0"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.0"
   }
 }
