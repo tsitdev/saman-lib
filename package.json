@@ -1,6 +1,6 @@
 {
   "name": "samandesk",
-  "version": "2.0.0-rc.2",
+  "version": "2.0.0",
   "license": "MIT",
   "type": "module",
   "packageManager": "bun@1.4.4",

@@ -26,7 +26,7 @@
 
 ## ‏نصب و پیش‌نیازها
 
-‏برای نصب نسخهٔ کاندید انتشار (⁦RC⁩)، یکی از دستورهای زیر را اجرا کنید:
+‏برای نصب پکیج، یکی از دستورهای زیر را اجرا کنید:
 
 </div>
 
@@ -34,10 +34,10 @@
 
 ```bash
 # Bun
-bun add samandesk@rc
+bun add samandesk
 
 # npm
-npm install samandesk@rc
+npm install samandesk
 ```
 
 </div>
